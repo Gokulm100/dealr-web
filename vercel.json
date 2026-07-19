@@ -1,5 +1,7 @@
 {
   "rewrites": [
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/privacy/", "destination": "/privacy.html" },
     { "source": "/manifest.json", "destination": "/manifest.json" },
     { "source": "/service-worker.js", "destination": "/service-worker.js" },
     { "source": "/favicon.ico", "destination": "/favicon.ico" },
