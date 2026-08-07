@@ -35,7 +35,7 @@ export default function Topbar() {
         <Search size={16} style={{ color: 'rgba(255,255,255,0.7)', flexShrink: 0 }} />
         <input
           type="text"
-          placeholder="Search ads..."
+          placeholder="Search listings, categories, places…"
           value={query}
           onChange={e => setQuery(e.target.value)}
           onKeyDown={handleSearch}
