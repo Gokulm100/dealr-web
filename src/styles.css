@@ -1268,8 +1268,10 @@ button, input, textarea, select {
 .detail-page { position: relative; }
 .detail-back-bar {
   display: flex; align-items: center; gap: 12px;
-  background: var(--primary); padding: 14px 24px; border-radius: var(--radius-lg);
+  background: linear-gradient(115deg, #1a3fbf 0%, var(--primary-dark) 48%, var(--primary) 100%);
+  padding: 14px 24px; border-radius: var(--radius-lg);
   margin-bottom: 20px; color: #fff;
+  box-shadow: 0 10px 24px rgba(30, 79, 214, 0.18);
 }
 .chat-header-bar {
   background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 60%, #3b82f6 100%);
