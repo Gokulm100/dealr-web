@@ -219,7 +219,7 @@ export default function SearchBar() {
         enterKeyHint="search"
         autoComplete="off"
         spellCheck={false}
-        placeholder="Search mobiles, Kochi, bikes…"
+        placeholder="Search mobiles, Kazhakootam, bikes…"
         value={query}
         aria-label="Search listings"
         aria-expanded={showPanel}
