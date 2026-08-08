@@ -385,23 +385,6 @@ button, input, textarea, select {
   background: #eff6ff;
   transform: translateY(-1px);
 }
-.beta-banner-dismiss {
-  flex-shrink: 0;
-  width: 30px;
-  height: 30px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.85);
-  cursor: pointer;
-}
-.beta-banner-dismiss:hover {
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
-}
 @media (max-width: 720px) {
   .beta-banner-inner {
     padding: 8px 12px;
@@ -411,16 +394,9 @@ button, input, textarea, select {
   }
   .beta-banner-text {
     font-size: 12px;
-    padding-right: 28px;
   }
   .beta-banner-icon { margin-top: 2px; }
   .beta-banner-cta { margin-left: 26px; }
-  .beta-banner-dismiss {
-    position: absolute;
-    top: 6px;
-    right: 8px;
-  }
-  .beta-banner-inner { position: relative; }
 }
 
 /* ── LAYOUT ── */

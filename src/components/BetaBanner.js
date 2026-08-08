@@ -1,23 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Megaphone, PlusCircle, X } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import { Megaphone, PlusCircle } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
-const STORAGE_KEY = 'dealr-beta-banner-dismissed';
-
 export default function BetaBanner() {
-  const { navigate } = useApp();
+  const { navigate, currentPage } = useApp();
   const bannerRef = useRef(null);
-  const [dismissed, setDismissed] = useState(() => {
-    try {
-      return localStorage.getItem(STORAGE_KEY) === '1';
-    } catch {
-      return false;
-    }
-  });
+  const visible = currentPage === 'home';
 
   useEffect(() => {
     const root = document.documentElement;
-    if (dismissed) {
+    if (!visible) {
       root.style.setProperty('--beta-banner-h', '0px');
       root.classList.remove('has-beta-banner');
       return undefined;
@@ -44,16 +36,9 @@ export default function BetaBanner() {
       root.style.setProperty('--beta-banner-h', '0px');
       root.classList.remove('has-beta-banner');
     };
-  }, [dismissed]);
+  }, [visible]);
 
-  if (dismissed) return null;
-
-  const dismiss = () => {
-    try {
-      localStorage.setItem(STORAGE_KEY, '1');
-    } catch { /* ignore */ }
-    setDismissed(true);
-  };
+  if (!visible) return null;
 
   return (
     <div
@@ -76,14 +61,6 @@ export default function BetaBanner() {
         >
           <PlusCircle size={14} strokeWidth={2.25} aria-hidden />
           Post an ad
-        </button>
-        <button
-          type="button"
-          className="beta-banner-dismiss"
-          onClick={dismiss}
-          aria-label="Dismiss beta banner"
-        >
-          <X size={16} strokeWidth={2.25} />
         </button>
       </div>
     </div>
