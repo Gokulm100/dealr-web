@@ -4,11 +4,10 @@ import {
   Sparkles,
   TrendingUp,
   Award,
-  Tag,
+  Lightbulb,
   RefreshCw,
   AlertCircle,
   ChevronDown,
-  ChevronRight,
   Eye,
   Clock,
   IndianRupee,
@@ -23,18 +22,11 @@ import {
 
 const CARD_ACCENTS = ['#4285f4', '#9b72cb', '#10b981', '#f59e0b', '#ec4899', '#06b6d4'];
 
-const FEATURES = [
-  { label: 'Performance metrics', Icon: TrendingUp },
-  { label: 'Market comparison', Icon: Award },
-  { label: 'Actionable tips', Icon: Tag },
+const CAPABILITIES = [
+  { label: 'Performance', Icon: TrendingUp },
+  { label: 'Market fit', Icon: Award },
+  { label: 'Next steps', Icon: Lightbulb },
 ];
-
-const STATUS_CLASS = {
-  strong: 'aa-glance-status--strong',
-  good: 'aa-glance-status--good',
-  fair: 'aa-glance-status--fair',
-  low: 'aa-glance-status--low',
-};
 
 function accentStyle(index) {
   return { '--aa-accent': CARD_ACCENTS[index % CARD_ACCENTS.length] };
@@ -74,10 +66,10 @@ function scoreFromValue(value) {
 }
 
 function getMetricStatus(score) {
-  if (score >= 75) return { label: 'Strong', tone: 'strong', color: '#10b981' };
-  if (score >= 50) return { label: 'Good', tone: 'good', color: '#378cf6' };
-  if (score >= 30) return { label: 'Fair', tone: 'fair', color: '#f59e0b' };
-  return { label: 'Needs work', tone: 'low', color: '#ef4444' };
+  if (score >= 75) return { label: 'Strong', tone: 'strong', color: '#059669' };
+  if (score >= 50) return { label: 'Good', tone: 'good', color: '#2563eb' };
+  if (score >= 30) return { label: 'Fair', tone: 'fair', color: '#d97706' };
+  return { label: 'Needs work', tone: 'low', color: '#dc2626' };
 }
 
 function pickMetricIcon(title) {
@@ -105,95 +97,44 @@ function buildGlanceMetrics(insights) {
   });
 }
 
-function scoreLevel(score) {
-  if (score >= 75) return 4;
-  if (score >= 50) return 3;
-  if (score >= 30) return 2;
-  return 1;
-}
-
-function LevelMeter({ score }) {
-  const level = scoreLevel(score);
-  const status = getMetricStatus(score);
-
-  return (
-    <div className="aa-level-meter" role="img" aria-label={`${status.label} performance`}>
-      {[0, 1, 2, 3].map((i) => (
-        <span
-          key={i}
-          className={`aa-level-seg aa-level-seg--${status.tone}${i < level ? ' aa-level-seg--on' : ''}`}
-        />
-      ))}
-    </div>
-  );
-}
-
-function GlanceLegend() {
-  return (
-    <div className="aa-glance-legend" aria-label="Score legend">
-      <span className="aa-glance-legend-item">
-        <span className="aa-glance-legend-dot aa-glance-status--strong" /> Strong
-      </span>
-      <span className="aa-glance-legend-item">
-        <span className="aa-glance-legend-dot aa-glance-status--good" /> Good
-      </span>
-      <span className="aa-glance-legend-item">
-        <span className="aa-glance-legend-dot aa-glance-status--fair" /> Fair
-      </span>
-      <span className="aa-glance-legend-item">
-        <span className="aa-glance-legend-dot aa-glance-status--low" /> Needs work
-      </span>
-    </div>
-  );
-}
-
-function MetricGlanceCard({ metric, onClick, active }) {
-  const { Icon, title, value, accent, score, status } = metric;
-  const className = [
-    'aa-glance-card',
-    onClick ? 'aa-glance-card--btn' : '',
-    active ? 'active' : '',
-  ].filter(Boolean).join(' ');
-
-  const inner = (
-    <>
-      <div className="aa-glance-card-head">
-        <span className="aa-glance-card-icon" aria-hidden>
-          <Icon size={18} strokeWidth={2.25} />
-        </span>
-        <div className="aa-glance-card-copy">
-          <div className="aa-glance-card-title">{title}</div>
-          <div className="aa-glance-card-value">{value}</div>
-        </div>
-        <LevelMeter score={score} />
-      </div>
-      <div className="aa-glance-card-meta">
-        <span className={`aa-glance-status aa-glance-status--${status.tone}`}>
-          {status.label}
-        </span>
-      </div>
-      <GeminiMetricMeter score={score} />
-    </>
-  );
-
-  if (onClick) {
-    return (
-      <button
-        type="button"
-        className={className}
-        style={{ '--aa-accent': accent }}
-        onClick={onClick}
-        aria-pressed={active}
-        aria-label={`${title}: ${value}. ${active ? 'Selected' : 'View details'}`}
-      >
-        {inner}
-      </button>
-    );
+function overallFromMetrics(metrics) {
+  if (!metrics.length) {
+    return { score: 0, status: getMetricStatus(0), headline: 'No metrics yet' };
   }
+  const score = Math.round(
+    metrics.reduce((sum, m) => sum + m.score, 0) / metrics.length
+  );
+  const status = getMetricStatus(score);
+  const headlines = {
+    strong: 'Your listing is performing well',
+    good: 'Solid performance with room to grow',
+    fair: 'A few tweaks could lift results',
+    low: 'Focus on the tips below to improve',
+  };
+  return { score, status, headline: headlines[status.tone] };
+}
 
+function AnalyticsHeader({ onRefresh, showRefresh, subtitle }) {
   return (
-    <div className={className} style={{ '--aa-accent': accent }}>
-      {inner}
+    <div className="aa-header">
+      <div className="aa-header-main">
+        <div className="ai-header">
+          <GeminiSparkles />
+          <GeminiGradientText className="ai-header-text">AI Analytics</GeminiGradientText>
+        </div>
+        {subtitle && <p className="aa-header-sub">{subtitle}</p>}
+      </div>
+      {showRefresh && (
+        <button
+          type="button"
+          className="aa-refresh"
+          onClick={onRefresh}
+          aria-label="Refresh analytics"
+          title="Refresh"
+        >
+          <RefreshCw size={15} strokeWidth={2.25} />
+        </button>
+      )}
     </div>
   );
 }
@@ -209,14 +150,15 @@ function AnalyzingState() {
   useEffect(() => {
     const copyTimer = setInterval(() => {
       setStepIndex((idx) => (idx + 1) % steps.length);
-    }, 3200);
+    }, 2800);
     return () => clearInterval(copyTimer);
   }, [steps.length]);
 
   return (
-    <div className="aa-analyze">
-      <div className="aa-analyze-icon-wrap" aria-hidden>
-        <GeminiSparkles size={28} />
+    <div className="aa-analyze" aria-live="polite" aria-busy="true">
+      <div className="aa-analyze-orb" aria-hidden>
+        <span className="aa-analyze-orb-ring" />
+        <GeminiSparkles size={26} />
       </div>
       <div className="aa-analyze-copy">
         <GeminiGradientText as="h3" className="aa-analyze-title">
@@ -226,36 +168,22 @@ function AnalyzingState() {
         <div className="aa-analyze-progress" aria-hidden>
           <span className="aa-analyze-progress-fill" />
         </div>
+        <div className="aa-analyze-steps" aria-hidden>
+          {steps.map((step, i) => (
+            <span
+              key={step}
+              className={`aa-analyze-dot${i === stepIndex ? ' active' : ''}${i < stepIndex ? ' done' : ''}`}
+            />
+          ))}
+        </div>
       </div>
-    </div>
-  );
-}
-
-function AnalyticsHeader({ onRefresh, showRefresh }) {
-  return (
-    <div className="aa-header">
-      <div className="ai-header">
-        <GeminiSparkles />
-        <GeminiGradientText className="ai-header-text">AI Analytics</GeminiGradientText>
-      </div>
-      {showRefresh && (
-        <button
-          type="button"
-          className="aa-refresh"
-          onClick={onRefresh}
-          aria-label="Refresh analytics"
-          title="Refresh"
-        >
-          <RefreshCw size={16} strokeWidth={2.25} />
-        </button>
-      )}
     </div>
   );
 }
 
 function SegmentTabs({ segments, activeKey, onChange }) {
   return (
-    <div className="aa-tabs" role="tablist">
+    <div className="aa-tabs" role="tablist" aria-label="Analytics views">
       {segments.map((seg) => {
         const active = activeKey === seg.key;
         return (
@@ -267,7 +195,7 @@ function SegmentTabs({ segments, activeKey, onChange }) {
             className={`aa-tab${active ? ' active' : ''}`}
             onClick={() => onChange(seg.key)}
           >
-            {seg.label}
+            <span className="aa-tab-label">{seg.label}</span>
             {seg.count > 0 && <span className="aa-tab-badge">{seg.count}</span>}
           </button>
         );
@@ -276,114 +204,94 @@ function SegmentTabs({ segments, activeKey, onChange }) {
   );
 }
 
-function MetricDetailPopover({ insight, metric, style, anchorRef }) {
-  const popoverRef = useRef(null);
-  const [placement, setPlacement] = useState('below');
-
-  useEffect(() => {
-    const anchor = anchorRef?.current;
-    const popover = popoverRef.current;
-    if (!anchor || !popover) return undefined;
-
-    const updatePlacement = () => {
-      const anchorRect = anchor.getBoundingClientRect();
-      const popoverHeight = popover.offsetHeight || 200;
-      const margin = 14;
-      const spaceBelow = window.innerHeight - anchorRect.bottom - margin;
-      const spaceAbove = anchorRect.top - margin;
-
-      if (spaceBelow < popoverHeight && spaceAbove > spaceBelow) {
-        setPlacement('above');
-      } else {
-        setPlacement('below');
-      }
-    };
-
-    updatePlacement();
-    const observer = typeof ResizeObserver !== 'undefined'
-      ? new ResizeObserver(updatePlacement)
-      : null;
-    observer?.observe(popover);
-    window.addEventListener('resize', updatePlacement);
-    window.addEventListener('scroll', updatePlacement, true);
-
-    return () => {
-      observer?.disconnect();
-      window.removeEventListener('resize', updatePlacement);
-      window.removeEventListener('scroll', updatePlacement, true);
-    };
-  }, [anchorRef, insight]);
+function OverviewStrip({ metrics }) {
+  const overall = overallFromMetrics(metrics);
+  const strongCount = metrics.filter((m) => m.status.tone === 'strong' || m.status.tone === 'good').length;
 
   return (
-    <div
-      ref={popoverRef}
-      className={`aa-metric-popover aa-metric-popover--${placement}`}
-      style={style}
-      role="dialog"
-      aria-label={`${insight.title} analysis`}
-      onMouseDown={(e) => e.stopPropagation()}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <div className="aa-metric-popover-caret" aria-hidden />
-      <span className={`aa-metric-detail-badge aa-glance-status aa-glance-status--${metric.status.tone}`}>
-        {metric.status.label}
-      </span>
-      <div className="aa-metric-detail-value">{insight.value}</div>
-      <div className="aa-metric-detail-title">{insight.title}</div>
-      {!!insight.description && (
-        <p className="aa-metric-detail-desc">{insight.description}</p>
-      )}
+    <div className="aa-overview" style={{ '--aa-accent': overall.status.color }}>
+      <div className="aa-overview-score">
+        <span className="aa-overview-num">{overall.score}</span>
+        <span className="aa-overview-denom">/100</span>
+      </div>
+      <div className="aa-overview-copy">
+        <span className={`aa-overview-status aa-tone--${overall.status.tone}`}>
+          {overall.status.label}
+        </span>
+        <p className="aa-overview-headline">{overall.headline}</p>
+        <p className="aa-overview-meta">
+          {strongCount} of {metrics.length} metrics looking healthy
+        </p>
+      </div>
+      <div className="aa-overview-meter" aria-hidden>
+        <GeminiMetricMeter score={overall.score} className="aa-overview-meter-bar" />
+      </div>
     </div>
   );
 }
 
-function MetricCardItem({ metric, insight, open, onToggle, accentIndex }) {
-  const wrapRef = useRef(null);
+function MetricRow({ metric, insight, open, onToggle, index }) {
+  const { Icon, title, value, accent, score, status } = metric;
+  const panelId = `aa-metric-panel-${index}`;
 
   return (
     <div
-      ref={wrapRef}
-      className={`aa-metric-card-wrap${open ? ' aa-metric-card-wrap--open' : ''}`}
+      className={`aa-metric-row${open ? ' open' : ''}`}
+      style={{ '--aa-accent': accent, animationDelay: `${index * 60}ms` }}
     >
-      <MetricGlanceCard
-        metric={metric}
-        active={open}
+      <button
+        type="button"
+        className="aa-metric-row-btn"
         onClick={onToggle}
-      />
-      {open && insight && (
-        <MetricDetailPopover
-          insight={insight}
-          metric={metric}
-          style={accentStyle(accentIndex)}
-          anchorRef={wrapRef}
-        />
-      )}
+        aria-expanded={open}
+        aria-controls={panelId}
+      >
+        <span className="aa-metric-row-icon" aria-hidden>
+          <Icon size={18} strokeWidth={2.2} />
+        </span>
+        <span className="aa-metric-row-main">
+          <span className="aa-metric-row-title">{title}</span>
+          <span className="aa-metric-row-value">{value}</span>
+        </span>
+        <span className="aa-metric-row-side">
+          <span className={`aa-tone-dot aa-tone--${status.tone}`} aria-hidden />
+          <span className={`aa-metric-row-status aa-tone--${status.tone}`}>{status.label}</span>
+          <ChevronDown size={16} className="aa-metric-row-chevron" aria-hidden />
+        </span>
+        <span className="aa-metric-row-meter" aria-hidden>
+          <GeminiMetricMeter score={score} />
+        </span>
+      </button>
+      <div
+        id={panelId}
+        className="aa-metric-row-panel"
+        hidden={!open}
+        role="region"
+        aria-label={`${title} analysis`}
+      >
+        {insight?.description ? (
+          <p className="aa-metric-row-desc">{insight.description}</p>
+        ) : (
+          <p className="aa-metric-row-desc aa-muted">No further detail for this metric.</p>
+        )}
+      </div>
     </div>
   );
 }
 
 function MetricExplorer({ insights }) {
-  const [selectedIdx, setSelectedIdx] = useState(null);
-  const gridRef = useRef(null);
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const listRef = useRef(null);
   const metrics = buildGlanceMetrics(insights);
 
   useEffect(() => {
     if (selectedIdx === null) return undefined;
 
-    const onPointerDown = (e) => {
-      if (gridRef.current?.contains(e.target)) return;
-      setSelectedIdx(null);
-    };
     const onKeyDown = (e) => {
       if (e.key === 'Escape') setSelectedIdx(null);
     };
-
-    document.addEventListener('mousedown', onPointerDown);
     document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown);
-      document.removeEventListener('keydown', onKeyDown);
-    };
+    return () => document.removeEventListener('keydown', onKeyDown);
   }, [selectedIdx]);
 
   if (!insights.length) {
@@ -392,25 +300,19 @@ function MetricExplorer({ insights }) {
 
   return (
     <div className="aa-metrics">
-      <p className="aa-glance-grid-label">Key metrics</p>
-      <p className="aa-metrics-hint">Click a card to open its analysis. Click outside or press Esc to close.</p>
-      <div className={`aa-glance-grid aa-metrics-grid${selectedIdx !== null ? ' aa-metrics-grid--popover-open' : ''}`} ref={gridRef}>
-        {metrics.map((metric, idx) => {
-          const open = selectedIdx === idx;
-          const insight = insights[idx];
-          return (
-            <MetricCardItem
-              key={`${metric.title}-${idx}`}
-              metric={metric}
-              insight={insight}
-              open={open}
-              accentIndex={idx}
-              onToggle={() => setSelectedIdx((prev) => (prev === idx ? null : idx))}
-            />
-          );
-        })}
+      <OverviewStrip metrics={metrics} />
+      <div className="aa-metrics-list" ref={listRef}>
+        {metrics.map((metric, idx) => (
+          <MetricRow
+            key={`${metric.title}-${idx}`}
+            metric={metric}
+            insight={insights[idx]}
+            index={idx}
+            open={selectedIdx === idx}
+            onToggle={() => setSelectedIdx((prev) => (prev === idx ? null : idx))}
+          />
+        ))}
       </div>
-      <GlanceLegend />
     </div>
   );
 }
@@ -424,26 +326,27 @@ function TipsList({ suggestions }) {
     <div className="aa-tips-list">
       {suggestions.map((tip, idx) => {
         const open = expandedIdx === idx;
+        const priority = idx === 0 ? 'high' : 'next';
         return (
           <div
             key={idx}
             className={`aa-tip${open ? ' open' : ''}`}
-            style={accentStyle(idx)}
+            style={{ ...accentStyle(idx), animationDelay: `${idx * 50}ms` }}
           >
             <button
               type="button"
               className="aa-tip-toggle"
               onClick={() => setExpandedIdx(open ? -1 : idx)}
+              aria-expanded={open}
             >
-              <span className={`aa-tip-badge${idx === 0 ? ' high' : ''}`}>
-                {idx === 0 ? 'High impact' : 'Recommended'}
+              <span className="aa-tip-index" aria-hidden>{idx + 1}</span>
+              <span className="aa-tip-copy">
+                <span className={`aa-tip-badge ${priority}`}>
+                  {priority === 'high' ? 'High impact' : 'Recommended'}
+                </span>
+                <span className="aa-tip-title">{tip.title}</span>
               </span>
-              <span className="aa-tip-title">{tip.title}</span>
-              {open ? (
-                <ChevronDown size={18} className="aa-tip-chevron" />
-              ) : (
-                <ChevronRight size={18} className="aa-tip-chevron" />
-              )}
+              <ChevronDown size={16} className="aa-tip-chevron" aria-hidden />
             </button>
             {open && !!tip.description && (
               <p className="aa-tip-body">{tip.description}</p>
@@ -493,17 +396,16 @@ export default function AiAnalytics({ ad, listing, apiFetch: apiFetchProp }) {
 
   if (!generated) {
     return (
-      <AnalyticsCard>
-        <AnalyticsHeader />
+      <AnalyticsCard className="aa-analytics--idle">
+        <div className="aa-idle-accent" aria-hidden />
+        <AnalyticsHeader subtitle="Owner insights for this listing" />
         <p className="aa-lead">
-          See how your listing compares and get smart suggestions to sell faster.
+          See how your listing compares in the market, then get clear moves to sell faster.
         </p>
-        <ul className="aa-features">
-          {FEATURES.map(({ label, Icon }) => (
-            <li key={label} className="aa-feature">
-              <span className="aa-feature-icon">
-                <Icon size={16} strokeWidth={2.25} />
-              </span>
+        <ul className="aa-capabilities">
+          {CAPABILITIES.map(({ label, Icon }) => (
+            <li key={label} className="aa-capability">
+              <Icon size={14} strokeWidth={2.25} aria-hidden />
               {label}
             </li>
           ))}
@@ -529,7 +431,7 @@ export default function AiAnalytics({ ad, listing, apiFetch: apiFetchProp }) {
     return (
       <AnalyticsCard>
         <AnalyticsHeader onRefresh={handleGenerate} showRefresh />
-        <div className="aa-error">
+        <div className="aa-error" role="alert">
           <AlertCircle size={20} strokeWidth={2} />
           <div>
             <p className="aa-error-title">Couldn&apos;t load analytics</p>
@@ -550,8 +452,12 @@ export default function AiAnalytics({ ad, listing, apiFetch: apiFetchProp }) {
   ];
 
   return (
-    <AnalyticsCard>
-      <AnalyticsHeader onRefresh={handleGenerate} showRefresh />
+    <AnalyticsCard className="aa-analytics--ready">
+      <AnalyticsHeader
+        onRefresh={handleGenerate}
+        showRefresh
+        subtitle="Updated for this listing"
+      />
 
       <SegmentTabs segments={segments} activeKey={activeTab} onChange={setActiveTab} />
 
