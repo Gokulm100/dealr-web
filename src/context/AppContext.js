@@ -200,6 +200,7 @@ export function AppProvider({ children }) {
     setFilterLocation('');
     setPriceMin('');
     setPriceMax('');
+    setSearchQuery('');
     setPage(1);
   }, []);
 

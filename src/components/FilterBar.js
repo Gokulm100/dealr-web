@@ -28,7 +28,7 @@ export default function FilterBar() {
     setSelectedCategoryId,
     locations, filterLocation, setFilterLocation,
     priceMin, setPriceMin, priceMax, setPriceMax,
-    searchQuery, activeFilterCount, clearAllFilters,
+    searchQuery, setSearchQuery, activeFilterCount, clearAllFilters,
     listings,
     setPage,
   } = useApp();
@@ -192,6 +192,17 @@ export default function FilterBar() {
         <div className="filter-search-banner">
           <Search size={15} />
           <span>Results for <strong>{searchQuery}</strong></span>
+          <button
+            type="button"
+            className="filter-search-banner-clear"
+            aria-label="Clear search"
+            onClick={() => {
+              setSearchQuery('');
+              setPage(1);
+            }}
+          >
+            <X size={14} />
+          </button>
         </div>
       )}
 
