@@ -5,6 +5,7 @@ import MarkSoldModal from '../components/MarkSoldModal';
 import PostSaleReminderModal from '../components/PostSaleReminderModal';
 import ReviewModal from '../components/ReviewModal';
 import { SkeletonMyAdRow } from '../components/Skeleton';
+import SeededBadge from '../components/SeededBadge';
 
 const FALLBACK = 'https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg';
 
@@ -179,7 +180,7 @@ export default function MyAdsPage() {
             <div className="my-ad-title">{ad.title}</div>
             <div className="my-ad-price">₹{Number(ad.price).toLocaleString('en-IN')}</div>
             <div className="my-ad-meta">{ad.location} · {ad.posted}</div>
-            <div style={{ marginTop: 6 }}>
+            <div style={{ marginTop: 6, display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
               {ad.isSold ? (
                 <span className="ad-status-badge inactive">Sold</span>
               ) : (
@@ -187,6 +188,7 @@ export default function MyAdsPage() {
                   {ad.isActive === false ? 'inactive' : 'Active'}
                 </span>
               )}
+              {ad.isSeeded && <SeededBadge size="sm" />}
             </div>
           </div>
           <div className="my-ad-actions">

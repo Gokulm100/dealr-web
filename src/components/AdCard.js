@@ -1,5 +1,6 @@
 import React from 'react';
 import { MapPin, Eye } from 'lucide-react';
+import SeededBadge from './SeededBadge';
 
 const FALLBACK = 'https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg';
 
@@ -43,6 +44,9 @@ export default function AdCard({ listing, onClick }) {
         />
         {listing.category && (
           <span className="ad-card-category">{listing.category}</span>
+        )}
+        {listing.isSeeded && (
+          <SeededBadge size="sm" className="ad-card-seeded" />
         )}
       </div>
 
