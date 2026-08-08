@@ -1,25 +1,11 @@
-import React, { useState } from 'react';
-import { Search, X, PlusCircle } from 'lucide-react';
+import React from 'react';
+import { PlusCircle } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import DealrLogo from './DealrLogo';
+import SearchBar from './SearchBar';
 
 export default function Topbar() {
-  const { user, navigate, setSearchQuery, setPage } = useApp();
-  const [query, setQuery] = useState('');
-
-  const handleSearch = (e) => {
-    if (e.key === 'Enter') {
-      setSearchQuery(query);
-      setPage(1);
-      navigate('home');
-    }
-  };
-
-  const handleClear = () => {
-    setQuery('');
-    setSearchQuery('');
-    setPage(1);
-  };
+  const { user, navigate } = useApp();
 
   return (
     <header className="topbar">
@@ -31,24 +17,10 @@ export default function Topbar() {
         className="topbar-brand"
       />
 
-      <div className="topbar-search">
-        <Search size={16} style={{ color: 'rgba(255,255,255,0.7)', flexShrink: 0 }} />
-        <input
-          type="text"
-          placeholder="Search listings, categories, places…"
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          onKeyDown={handleSearch}
-        />
-        {query && (
-          <button onClick={handleClear}>
-            <X size={16} />
-          </button>
-        )}
-      </div>
+      <SearchBar />
 
       <div className="topbar-right">
-        <button className="topbar-btn" onClick={() => navigate('post')}>
+        <button type="button" className="topbar-btn" onClick={() => navigate('post')}>
           <PlusCircle size={16} /> Post Ad
         </button>
         {user ? (
@@ -64,7 +36,7 @@ export default function Topbar() {
               </div>
             )
         ) : (
-          <button className="topbar-btn primary" onClick={() => navigate('profile')}>Sign In</button>
+          <button type="button" className="topbar-btn primary" onClick={() => navigate('profile')}>Sign In</button>
         )}
       </div>
     </header>
