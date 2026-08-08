@@ -3,6 +3,7 @@ import { fetchPendingReportCount } from '../services/adminApi';
 import { initSocket, disconnectSocket, getSocket, subscribeChatMessages, emitJoin } from '../utils/socket';
 import { parseChatPayload } from '../utils/chatSocket';
 import { formatLocationName, toApiLocationFilter } from '../utils/locationFilter';
+import { isSeededDescription, stripSeededMarker } from '../utils/seededListing';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'https://e4u-backend.onrender.com';
 const LIMIT = 10;
@@ -96,35 +97,40 @@ export function AppProvider({ children }) {
     setHasConsented(false);
   }, []);
 
-  const mapListing = (item) => ({
-    id: item._id,
-    title: item.title || '',
-    price: item.price || 0,
-    images: item.images?.length ? item.images : ['https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg'],
-    category: item.category?.name || item.category || 'General',
-    categoryId: item.category?._id || item.categoryId || '',
-    subCategory: item.subCategoryId?.name || item.subCategory || '',
-    location: item.location?.name || item.location || '',
-    views: item.views || 0,
-    reports: item.reportCounter || 0,
-    posted: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
-    createdAt: item.createdAt || item.posted || '',
-    description: item.description || '',
-    seller: item.seller?.name || item.sellerName || 'Unknown',
-    sellerPic: item.seller?.profilePic || item.sellerPic || null,
-    sellerId: item.seller?._id || item.sellerId || '',
-    sellerRatingAvg: item.seller?.ratingAvg || 0,
-    sellerReviewCount: item.seller?.reviewCount || 0,
-    sellerCompletedSales: item.seller?.completedSales || 0,
-    sellerTrustScore: item.seller?.trustScore ?? 50,
-    sellerBadges: item.seller?.badges || [],
-    sellerSince: item.seller?.createdAt
-      ? new Date(item.seller.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
-      : '',
-    isSold: item.isSold === true,
-    status: item.isSold ? 'sold' : (item.status || 'active'),
-    isActive:item.isActive == false ? false : true,
-  });
+  const mapListing = (item) => {
+    const rawDescription = item.description || '';
+    const seeded = isSeededDescription(rawDescription);
+    return {
+      id: item._id,
+      title: item.title || '',
+      price: item.price || 0,
+      images: item.images?.length ? item.images : ['https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg'],
+      category: item.category?.name || item.category || 'General',
+      categoryId: item.category?._id || item.categoryId || '',
+      subCategory: item.subCategoryId?.name || item.subCategory || '',
+      location: item.location?.name || item.location || '',
+      views: item.views || 0,
+      reports: item.reportCounter || 0,
+      posted: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
+      createdAt: item.createdAt || item.posted || '',
+      description: seeded ? stripSeededMarker(rawDescription) : rawDescription,
+      seller: item.seller?.name || item.sellerName || 'Unknown',
+      sellerPic: item.seller?.profilePic || item.sellerPic || null,
+      sellerId: item.seller?._id || item.sellerId || '',
+      sellerRatingAvg: item.seller?.ratingAvg || 0,
+      sellerReviewCount: item.seller?.reviewCount || 0,
+      sellerCompletedSales: item.seller?.completedSales || 0,
+      sellerTrustScore: item.seller?.trustScore ?? 50,
+      sellerBadges: item.seller?.badges || [],
+      sellerSince: item.seller?.createdAt
+        ? new Date(item.seller.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+        : '',
+      isSold: item.isSold === true,
+      isSeeded: seeded,
+      status: item.isSold ? 'sold' : (item.status || 'active'),
+      isActive: item.isActive == false ? false : true,
+    };
+  };
 
   const buildListingsQuery = useCallback(() => {
     const catObj = categories.find(c => c.name === selectedCategory);

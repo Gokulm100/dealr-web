@@ -19,6 +19,7 @@ import GenuinityMeter from '../components/GenuinityMeter';
 import SellerTrustLine from '../components/SellerTrustLine';
 import ReviewModal from '../components/ReviewModal';
 import OwnerAdActions from '../components/OwnerAdActions';
+import SeededBadge, { SeededNotice } from '../components/SeededBadge';
 
 const FALLBACK = 'https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg';
 
@@ -438,12 +439,16 @@ export default function AdDetailPage() {
             <div className="detail-price-row">
               <div className="detail-price">₹{Number(listing.price).toLocaleString('en-IN')}</div>
               {listing.isSold && <span className="detail-sold-badge">SOLD</span>}
+              {listing.isSeeded && <SeededBadge />}
             </div>
             <div className="detail-title">{listing.title}</div>
             <div className="detail-tags">
               <div className="detail-tag"><Tag size={12} /> {listing.category}</div>
               {listing.subCategory && listing.subCategory !== 'General' && (
                 <div className="detail-tag">{listing.subCategory}</div>
+              )}
+              {listing.isSeeded && (
+                <div className="detail-tag detail-tag--seeded">Sample / seeded</div>
               )}
             </div>
             <div className="detail-meta">
@@ -456,6 +461,7 @@ export default function AdDetailPage() {
 
           <div className="detail-section">
             <div className="section-title">Description</div>
+            {listing.isSeeded && <SeededNotice />}
             <div className="description-text">{listing.description || 'No description provided.'}</div>
           </div>
 
