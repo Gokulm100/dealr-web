@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   MapPin, IndianRupee, SlidersHorizontal, X, ChevronDown, RotateCcw,
   Search, Sparkles,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { filterLocationsByQuery } from '../utils/locationFilter';
 
 const PRICE_PRESETS = [
   { id: 'any', label: 'Any', min: '', max: '' },
@@ -104,9 +105,17 @@ export default function FilterBar() {
       ? [priceMin && `From ₹${formatInr(priceMin)}`, priceMax && `Up to ₹${formatInr(priceMax)}`].filter(Boolean).join(' · ') || 'Custom range'
       : PRICE_PRESETS.find(p => p.id === activePricePreset)?.label || 'Price';
 
-  const filteredLocations = locations
-    .filter(l => l.name.toLowerCase().includes(locationQuery.toLowerCase()))
-    .slice(0, 10);
+  const filteredLocations = useMemo(
+    () => filterLocationsByQuery(locations, locationQuery, { limit: 12 }),
+    [locations, locationQuery],
+  );
+
+  const applyLocation = (value) => {
+    setFilterLocation(value);
+    setLocationQuery(value);
+    closeDropdowns();
+    setPage(1);
+  };
 
   const removeFilter = (key) => {
     switch (key) {
@@ -270,20 +279,22 @@ export default function FilterBar() {
                     <input
                       type="text"
                       className="filter-dropdown-search"
-                      placeholder="City, area, or locality..."
+                      placeholder="Locality, city, or district..."
                       value={locationQuery}
                       autoFocus
                       onChange={e => {
                         setLocationQuery(e.target.value);
                         if (!e.target.value) {
                           setFilterLocation('');
+                          setPage(1);
                         }
                       }}
                       onKeyDown={e => {
                         if (e.key === 'Enter' && locationQuery.trim()) {
-                          setFilterLocation(locationQuery.trim());
-                          closeDropdowns();
-                          setPage(1);
+                          const exact = filteredLocations.find(
+                            (l) => l.name.toLowerCase() === locationQuery.trim().toLowerCase()
+                          );
+                          applyLocation(exact?.name || locationQuery.trim());
                         }
                       }}
                     />
@@ -292,46 +303,43 @@ export default function FilterBar() {
                     <button
                       type="button"
                       className={`filter-dropdown-option${!filterLocation ? ' selected' : ''}`}
-                      onClick={() => {
-                        setFilterLocation('');
-                        setLocationQuery('');
-                        closeDropdowns();
-                        setPage(1);
-                      }}
+                      onClick={() => applyLocation('')}
                     >
                       Anywhere
                     </button>
+                    {!locationQuery.trim() && filteredLocations.length > 0 && (
+                      <p className="filter-dropdown-hint" style={{ padding: '8px 14px 4px' }}>Popular nearby</p>
+                    )}
                     {filteredLocations.map(loc => (
                       <button
-                        key={loc.id}
+                        key={loc.id || loc.name}
                         type="button"
                         className={`filter-dropdown-option${filterLocation === loc.name ? ' selected' : ''}`}
-                        onClick={() => {
-                          setFilterLocation(loc.name);
-                          setLocationQuery(loc.name);
-                          closeDropdowns();
-                          setPage(1);
-                        }}
+                        onClick={() => applyLocation(loc.name)}
                       >
                         <MapPin size={14} />
-                        <span>{loc.name}</span>
+                        <span>
+                          {loc.name}
+                          {loc.district && loc.district !== loc.city ? (
+                            <small className="filter-dropdown-option-meta"> · {loc.district}</small>
+                          ) : null}
+                        </span>
                       </button>
                     ))}
                     {locationQuery.trim() && !filteredLocations.some(l => l.name.toLowerCase() === locationQuery.toLowerCase()) && (
                       <button
                         type="button"
                         className="filter-dropdown-option filter-dropdown-custom"
-                        onClick={() => {
-                          setFilterLocation(locationQuery.trim());
-                          closeDropdowns();
-                          setPage(1);
-                        }}
+                        onClick={() => applyLocation(locationQuery.trim())}
                       >
                         Search &quot;{locationQuery.trim()}&quot;
                       </button>
                     )}
+                    {filteredLocations.length === 0 && locationQuery.trim() && (
+                      <p className="filter-dropdown-empty">No matching places — press Enter to search anyway</p>
+                    )}
                     {filteredLocations.length === 0 && !locationQuery.trim() && (
-                      <p className="filter-dropdown-empty">Type to search locations</p>
+                      <p className="filter-dropdown-empty">Locations are still loading…</p>
                     )}
                   </div>
                 </div>

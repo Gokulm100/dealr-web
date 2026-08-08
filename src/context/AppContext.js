@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useCallback, useEffect, use
 import { fetchPendingReportCount } from '../services/adminApi';
 import { initSocket, disconnectSocket, getSocket, subscribeChatMessages, emitJoin } from '../utils/socket';
 import { parseChatPayload } from '../utils/chatSocket';
+import { formatLocationName, toApiLocationFilter } from '../utils/locationFilter';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'https://e4u-backend.onrender.com';
 const LIMIT = 10;
@@ -135,13 +136,14 @@ export function AppProvider({ children }) {
       category: selectedCategory !== 'All' ? catObj?.id : undefined,
       subCategory: selectedSubCategory || undefined,
       userId: user?._id || undefined,
-      location: filterLocation || undefined,
+      // Display names use ", " but many ads store ","; send locality/city for reliable matches.
+      location: toApiLocationFilter(filterLocation, locations),
       priceMin: min != null && !Number.isNaN(min) ? min : undefined,
       priceMax: max != null && !Number.isNaN(max) ? max : undefined,
     };
   }, [
     categories, selectedCategory, selectedSubCategory, searchQuery, user,
-    filterLocation, priceMin, priceMax,
+    filterLocation, locations, priceMin, priceMax,
   ]);
 
   const fetchListings = useCallback(async (pageNum = 1, reset = false) => {
@@ -171,18 +173,21 @@ export function AppProvider({ children }) {
 
   const fetchLocations = useCallback(async () => {
     try {
-        const res = await apiFetch('/api/users/locations');
+      const res = await apiFetch('/api/users/locations');
       const data = Array.isArray(res) ? res : (res.data || []);
-      if (Array.isArray(data)) setLocations(data.map(c => ({
-        id: c._id,
-        name: c.locality + ', ' + c.city,
-        locality: c.locality,
-        city: c.city,
-        district: c.district,
-        state: c.state,
-      })));
+      if (Array.isArray(data)) {
+        setLocations(data.map((c) => ({
+          id: c._id,
+          name: formatLocationName(c),
+          locality: c.locality || '',
+          city: c.city || '',
+          district: c.district || '',
+          state: c.state || '',
+          usageCount: Number(c.usageCount) || 0,
+        })));
+      }
     } catch { /* ignore */ }
-  }, []);
+  }, [apiFetch]);
 
   const activeFilterCount = [
     selectedCategory !== 'All',
