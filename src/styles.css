@@ -734,6 +734,11 @@ button, input, textarea, select {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.filter-dropdown-option-meta {
+  color: #94a3b8;
+  font-weight: 500;
+  font-size: 12px;
+}
 .filter-dropdown-option svg { flex-shrink: 0; color: #94a3b8; }
 .filter-dropdown-option:hover { background: #f8fafc; }
 .filter-dropdown-option.selected {
