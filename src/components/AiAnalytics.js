@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../context/AppContext';
 import {
   Sparkles,
@@ -281,7 +281,6 @@ function MetricRow({ metric, insight, open, onToggle, index }) {
 
 function MetricExplorer({ insights }) {
   const [selectedIdx, setSelectedIdx] = useState(0);
-  const listRef = useRef(null);
   const metrics = buildGlanceMetrics(insights);
 
   useEffect(() => {
@@ -301,7 +300,7 @@ function MetricExplorer({ insights }) {
   return (
     <div className="aa-metrics">
       <OverviewStrip metrics={metrics} />
-      <div className="aa-metrics-list" ref={listRef}>
+      <div className="aa-metrics-list">
         {metrics.map((metric, idx) => (
           <MetricRow
             key={`${metric.title}-${idx}`}

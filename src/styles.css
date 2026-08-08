@@ -2489,7 +2489,7 @@ button, input, textarea, select {
 .aa-tip-badge.high { color: #c2410c; }
 .aa-tip-title {
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 600;
   color: var(--text);
   line-height: 1.4;
   overflow-wrap: anywhere;
