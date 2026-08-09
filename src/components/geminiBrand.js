@@ -25,11 +25,11 @@ export function GeminiAnalyticsDefs() {
   );
 }
 
-export function GeminiSparkles({ size = 18, className = '' }) {
+export function GeminiSparkles({ size = 18, className = '', strokeWidth = 2.25 }) {
   return (
     <Sparkles
       size={size}
-      strokeWidth={2.25}
+      strokeWidth={strokeWidth}
       className={`ai-icon-gemini ${className}`.trim()}
       color={`url(#${GEMINI_GRADIENT_ID})`}
       aria-hidden

@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, AlertCircle, X, ChevronLeft, Check, Sparkles } from 'lucide-react';
+import { Camera, AlertCircle, X, ChevronLeft, Check } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import AiTextArea from '../components/aiTextArea';
+import { GeminiAnalyticsDefs, GeminiSparkles } from '../components/geminiBrand';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'https://e4u-backend.onrender.com';
 
@@ -509,11 +510,12 @@ export default function PostAdPage() {
               onClick={fillWithAiFromPhotos}
               disabled={visionLoading || !user || images.length === 0}
             >
+              <GeminiAnalyticsDefs />
               <span className="ai-fill-btn-icon" aria-hidden="true">
                 {visionLoading ? (
                   <span className="ai-fill-btn-spinner" />
                 ) : (
-                  <Sparkles size={14} strokeWidth={1.75} />
+                  <GeminiSparkles size={14} strokeWidth={1.75} />
                 )}
               </span>
               <span className="ai-fill-btn-label">
