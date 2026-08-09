@@ -513,18 +513,11 @@ export default function PostAdPage() {
                 {visionLoading ? (
                   <span className="ai-fill-btn-spinner" />
                 ) : (
-                  <Sparkles size={18} strokeWidth={2.25} />
+                  <Sparkles size={14} strokeWidth={1.75} />
                 )}
               </span>
-              <span className="ai-fill-btn-copy">
-                <span className="ai-fill-btn-label">
-                  {visionLoading ? 'Analyzing photos…' : 'Fill form with AI'}
-                </span>
-                <span className="ai-fill-btn-sub">
-                  {visionLoading
-                    ? 'Reading your photos to draft the listing'
-                    : 'Drafts title, category & description — you review'}
-                </span>
+              <span className="ai-fill-btn-label">
+                {visionLoading ? 'Analyzing…' : 'Draft with AI'}
               </span>
             </button>
           )}
