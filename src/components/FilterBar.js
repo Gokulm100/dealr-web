@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   MapPin, IndianRupee, SlidersHorizontal, X, ChevronDown, RotateCcw,
-  Search, Sparkles,
+  Search, Sparkles, ArrowUpDown,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { filterLocationsByQuery } from '../utils/locationFilter';
@@ -12,6 +12,14 @@ const PRICE_PRESETS = [
   { id: '5k-20k', label: '₹5K – ₹20K', min: '5000', max: '20000' },
   { id: '20k-1l', label: '₹20K – ₹1L', min: '20000', max: '100000' },
   { id: 'above1l', label: '₹1L+', min: '100000', max: '' },
+];
+
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Newest first' },
+  { value: 'oldest', label: 'Oldest first' },
+  { value: 'price_low', label: 'Price: Low to high' },
+  { value: 'price_high', label: 'Price: High to low' },
+  { value: 'most_viewed', label: 'Most viewed' },
 ];
 
 function formatInr(n) {
@@ -29,8 +37,9 @@ export default function FilterBar() {
     setSelectedCategoryId,
     locations, filterLocation, setFilterLocation,
     priceMin, setPriceMin, priceMax, setPriceMax,
+    listingSort, setListingSort,
     searchQuery, setSearchQuery, activeFilterCount, clearAllFilters,
-    listings,
+    listings, loading,
     setPage,
   } = useApp();
 
@@ -179,6 +188,25 @@ export default function FilterBar() {
           )}
         </div>
         <div className="filter-header-actions">
+          <label className="filter-sort-control">
+            <ArrowUpDown size={14} aria-hidden />
+            <select
+              className="filter-sort-select"
+              value={listingSort}
+              onChange={(e) => {
+                setListingSort(e.target.value);
+                setPage(1);
+              }}
+              disabled={loading}
+              aria-label="Sort listings"
+            >
+              {SORT_OPTIONS.map(option => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
           <button
             type="button"
             className="filter-toggle-more"

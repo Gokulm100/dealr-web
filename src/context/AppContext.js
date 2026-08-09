@@ -32,6 +32,7 @@ export function AppProvider({ children }) {
   const [filterLocation, setFilterLocation] = useState('');
   const [priceMin, setPriceMin] = useState('');
   const [priceMax, setPriceMax] = useState('');
+  const [listingSort, setListingSort] = useState('newest');
   const [listings, setListings] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -146,10 +147,11 @@ export function AppProvider({ children }) {
       location: toApiLocationFilter(filterLocation, locations),
       priceMin: min != null && !Number.isNaN(min) ? min : undefined,
       priceMax: max != null && !Number.isNaN(max) ? max : undefined,
+      sort: listingSort,
     };
   }, [
     categories, selectedCategory, selectedSubCategory, searchQuery, user,
-    filterLocation, locations, priceMin, priceMax,
+    filterLocation, locations, priceMin, priceMax, listingSort,
   ]);
 
   const fetchListings = useCallback(async (pageNum = 1, reset = false) => {
@@ -163,7 +165,7 @@ export function AppProvider({ children }) {
       });
       const data = result?.ads || [];
       const mapped = data.map(mapListing);
-      setHasMore(data.length >= LIMIT);
+      setHasMore(result?.hasMore ?? data.length >= LIMIT);
       setListings(prev => (reset || pageNum === 1) ? mapped : [...prev, ...mapped]);
     } catch { /* ignore */ }
     finally { setLoading(false); }
@@ -211,6 +213,7 @@ export function AppProvider({ children }) {
     setFilterLocation('');
     setPriceMin('');
     setPriceMax('');
+    setListingSort('newest');
     setSearchQuery('');
     setPage(1);
   }, []);
@@ -258,6 +261,7 @@ export function AppProvider({ children }) {
     priceMin,
     priceMax,
     searchQuery,
+    listingSort,
   ]);
 
   const fetchAdminPendingCount = useCallback(async () => {
@@ -320,6 +324,7 @@ export function AppProvider({ children }) {
       searchQuery, setSearchQuery,
       filterLocation, setFilterLocation,
       priceMin, setPriceMin, priceMax, setPriceMax,
+      listingSort, setListingSort,
       activeFilterCount, clearAllFilters,
       listings, setListings, page, setPage, hasMore, loading,
       messageCount, fetchMessageCount,
