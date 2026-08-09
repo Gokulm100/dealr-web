@@ -3668,16 +3668,15 @@ button, input, textarea, select {
   --ai-fill-purple: #9b72cb;
   --ai-fill-rose: #d96570;
   position: relative;
-  isolation: isolate;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   margin-top: 14px;
   padding: 9px 16px;
-  border: none;
+  border: 1px solid rgba(155, 114, 203, 0.22);
   border-radius: 999px;
-  background: transparent;
+  background: linear-gradient(180deg, #ffffff 0%, #fbf9ff 100%);
   color: #5b5478;
   font-family: inherit;
   font-size: 13px;
@@ -3685,58 +3684,28 @@ button, input, textarea, select {
   letter-spacing: -0.01em;
   cursor: pointer;
   overflow: hidden;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
   transition:
-    color 0.25s var(--ease-out),
+    border-color 0.2s var(--ease-out),
+    background 0.2s var(--ease-out),
+    box-shadow 0.2s var(--ease-out),
     transform 0.2s var(--ease-out),
     opacity 0.2s;
-  animation: aiFillBtnIn 280ms var(--ease-out);
-}
-.ai-fill-btn::before {
-  content: '';
-  position: absolute;
-  inset: -55%;
-  background: conic-gradient(
-    from 0deg,
-    var(--ai-fill-blue),
-    var(--ai-fill-purple),
-    var(--ai-fill-rose),
-    var(--ai-fill-blue)
-  );
-  opacity: 0.55;
-  animation: aiFillBorderSpin 5.5s linear infinite;
-  z-index: -2;
-}
-.ai-fill-btn::after {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(252, 250, 255, 0.96));
-  z-index: -1;
-  transition: background 0.25s var(--ease-out);
+  animation: aiFillBtnIn 240ms var(--ease-out);
 }
 @keyframes aiFillBtnIn {
   from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
-@keyframes aiFillBorderSpin {
-  to { transform: rotate(360deg); }
-}
-@keyframes aiFillSparkle {
-  0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.08); opacity: 1; }
+@keyframes aiFillShimmer {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
 }
 .ai-fill-btn:hover:not(:disabled) {
-  color: #4b3f7a;
+  border-color: rgba(155, 114, 203, 0.38);
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(155, 114, 203, 0.08);
   transform: translateY(-1px);
-}
-.ai-fill-btn:hover:not(:disabled)::before {
-  opacity: 0.85;
-  animation-duration: 3.2s;
-}
-.ai-fill-btn:hover:not(:disabled)::after {
-  background: linear-gradient(180deg, #ffffff, #faf7ff);
 }
 .ai-fill-btn:active:not(:disabled) {
   transform: translateY(0) scale(0.98);
@@ -3744,27 +3713,37 @@ button, input, textarea, select {
 .ai-fill-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
-}
-.ai-fill-btn:disabled::before {
-  animation: none;
-  opacity: 0.28;
-  background: #cbd5e1;
+  box-shadow: none;
 }
 .ai-fill-btn.is-loading {
   cursor: wait;
+  border-color: rgba(155, 114, 203, 0.28);
+  pointer-events: none;
 }
-.ai-fill-btn.is-loading::before {
-  animation-duration: 2.2s;
-  opacity: 0.75;
+.ai-fill-btn.is-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 38%,
+    rgba(66, 133, 244, 0.14) 46%,
+    rgba(155, 114, 203, 0.22) 50%,
+    rgba(217, 101, 112, 0.14) 54%,
+    transparent 62%,
+    transparent 100%
+  );
+  animation: aiFillShimmer 1.35s ease-in-out infinite;
+  pointer-events: none;
 }
 .ai-fill-btn-icon {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  animation: aiFillSparkle 2.4s var(--ease-out) infinite;
-}
-.ai-fill-btn.is-loading .ai-fill-btn-icon {
-  animation: none;
 }
 .ai-fill-btn-spinner {
   width: 12px;
@@ -3776,6 +3755,8 @@ button, input, textarea, select {
   animation: spin 0.7s linear infinite;
 }
 .ai-fill-btn-label {
+  position: relative;
+  z-index: 1;
   line-height: 1;
   background: linear-gradient(135deg, #4285f4 0%, #9b72cb 48%, #d96570 100%);
   -webkit-background-clip: text;
@@ -3784,9 +3765,12 @@ button, input, textarea, select {
   color: transparent;
 }
 .ai-fill-btn.is-loading .ai-fill-btn-label {
-  background: none;
-  -webkit-text-fill-color: #7c7399;
-  color: #7c7399;
+  background: linear-gradient(135deg, #4285f4 0%, #9b72cb 48%, #d96570 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  opacity: 0.85;
 }
 .ai-draft-banner {
   margin-top: 14px;
