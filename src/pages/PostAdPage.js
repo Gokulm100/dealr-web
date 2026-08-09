@@ -505,12 +505,27 @@ export default function PostAdPage() {
           {(images.length > 0 || existingImages.length > 0) && (
             <button
               type="button"
-              className="ai-fill-btn"
+              className={`ai-fill-btn${visionLoading ? ' is-loading' : ''}`}
               onClick={fillWithAiFromPhotos}
               disabled={visionLoading || !user || images.length === 0}
             >
-              <Sparkles size={16} />
-              {visionLoading ? 'Analyzing photos…' : 'Fill form with AI'}
+              <span className="ai-fill-btn-icon" aria-hidden="true">
+                {visionLoading ? (
+                  <span className="ai-fill-btn-spinner" />
+                ) : (
+                  <Sparkles size={18} strokeWidth={2.25} />
+                )}
+              </span>
+              <span className="ai-fill-btn-copy">
+                <span className="ai-fill-btn-label">
+                  {visionLoading ? 'Analyzing photos…' : 'Fill form with AI'}
+                </span>
+                <span className="ai-fill-btn-sub">
+                  {visionLoading
+                    ? 'Reading your photos to draft the listing'
+                    : 'Drafts title, category & description — you review'}
+                </span>
+              </span>
             </button>
           )}
 

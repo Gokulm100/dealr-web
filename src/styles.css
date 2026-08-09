@@ -3664,28 +3664,94 @@ button, input, textarea, select {
   color: var(--muted);
 }
 .ai-fill-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 12px;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(47, 127, 240, 0.35);
-  background: linear-gradient(180deg, #f4f8ff 0%, #eaf2ff 100%);
-  color: #1d4f91;
-  font-size: 13px;
-  font-weight: 700;
+  gap: 12px;
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(30, 79, 214, 0.18);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, transparent 42%),
+    linear-gradient(135deg, #1e4fd6 0%, #2f7ff0 55%, #4a8ff5 100%);
+  color: #fff;
   font-family: inherit;
+  text-align: left;
   cursor: pointer;
-  transition: background 0.2s var(--ease-out), transform 0.15s var(--ease-out), opacity 0.2s;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.22) inset,
+    0 10px 22px rgba(30, 79, 214, 0.22);
+  transition:
+    transform 0.2s var(--ease-out),
+    box-shadow 0.2s var(--ease-out),
+    filter 0.2s var(--ease-out),
+    opacity 0.2s;
+  animation: aiFillBtnIn 280ms var(--ease-out);
+}
+@keyframes aiFillBtnIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .ai-fill-btn:hover:not(:disabled) {
-  background: linear-gradient(180deg, #eaf2ff 0%, #ddeaff 100%);
+  filter: brightness(1.04);
+  transform: translateY(-1px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.28) inset,
+    0 14px 28px rgba(30, 79, 214, 0.28);
 }
-.ai-fill-btn:active:not(:disabled) { transform: scale(0.98); }
+.ai-fill-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+  filter: brightness(0.98);
+}
 .ai-fill-btn:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  filter: none;
+}
+.ai-fill-btn.is-loading {
+  cursor: wait;
+  filter: none;
+}
+.ai-fill-btn-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+.ai-fill-btn-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
+}
+.ai-fill-btn-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.ai-fill-btn-label {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.ai-fill-btn-sub {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.82);
 }
 .ai-draft-banner {
   margin-top: 14px;
