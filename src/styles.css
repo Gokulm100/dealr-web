@@ -3657,6 +3657,81 @@ button, input, textarea, select {
 }
 .form-label { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; margin-top: 14px; display: block; }
 .form-label:first-child { margin-top: 0; }
+.form-hint {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.ai-fill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(47, 127, 240, 0.35);
+  background: linear-gradient(180deg, #f4f8ff 0%, #eaf2ff 100%);
+  color: #1d4f91;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s var(--ease-out), transform 0.15s var(--ease-out), opacity 0.2s;
+}
+.ai-fill-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, #eaf2ff 0%, #ddeaff 100%);
+}
+.ai-fill-btn:active:not(:disabled) { transform: scale(0.98); }
+.ai-fill-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.ai-draft-banner {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid #d7e6fb;
+  background: #f7faff;
+}
+.ai-draft-banner-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.ai-draft-banner-text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.ai-draft-confidence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.ai-conf-chip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  background: #fff;
+  text-transform: capitalize;
+}
+.ai-conf-chip.is-ok {
+  border-color: #b7e0c2;
+  color: #1f6b3a;
+  background: #f2fbf5;
+}
+.ai-conf-chip.is-low {
+  border-color: #f0d4a8;
+  color: #8a5a12;
+  background: #fff9ef;
+}
 .form-input {
   width: 100%; border: 1.5px solid var(--border); border-radius: var(--radius-md);
   padding: 11px 14px; font-size: 14px; color: var(--text); outline: none;

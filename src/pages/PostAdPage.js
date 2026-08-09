@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, AlertCircle, X, ChevronLeft, Check } from 'lucide-react';
+import { Camera, AlertCircle, X, ChevronLeft, Check, Sparkles } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import AiTextArea from '../components/aiTextArea';
+
+const API = process.env.REACT_APP_API_BASE_URL || 'https://e4u-backend.onrender.com';
 
 const KERALA_DISTRICTS = [
   'Thiruvananthapuram', 'Kollam', 'Pathanamthitta', 'Alappuzha', 'Kottayam',
@@ -31,6 +33,8 @@ export default function PostAdPage() {
   const [existingImages, setExistingImages] = useState(editingAd?.images || []);
   const [submitting, setSubmitting] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
+  const [visionLoading, setVisionLoading] = useState(false);
+  const [aiDraftMeta, setAiDraftMeta] = useState(null);
   const [descInsights, setDescInsights] = useState({ total: 0, completed: 0, missing: 0, progress: 0, nextMissingLabel: '' });
   const fileRef = useRef(null);
 
@@ -226,10 +230,17 @@ export default function PostAdPage() {
   const handleImagePick = (e) => {
     const files = Array.from(e.target.files);
     setImages(prev => [...prev, ...files].slice(0, 8));
+    setAiDraftMeta(null);
   };
 
-  const removeImage = (i) => setImages(prev => prev.filter((_, idx) => idx !== i));
-  const removeExisting = (i) => setExistingImages(prev => prev.filter((_, idx) => idx !== i));
+  const removeImage = (i) => {
+    setImages(prev => prev.filter((_, idx) => idx !== i));
+    setAiDraftMeta(null);
+  };
+  const removeExisting = (i) => {
+    setExistingImages(prev => prev.filter((_, idx) => idx !== i));
+    setAiDraftMeta(null);
+  };
 
   // Helper to animate text like a typewriter
   const animateDescription = (text) => {
@@ -245,6 +256,139 @@ export default function PostAdPage() {
         return text.slice(0, i);
       });
     }, 12); // Adjust speed as needed
+  };
+
+  const applyCategoryFromName = (categoryName, subCategoryName) => {
+    if (!categoryName) return false;
+    const cat = categories.find(
+      (c) => c.name.toLowerCase() === String(categoryName).toLowerCase(),
+    );
+    if (!cat) return false;
+    setSelectedCatId(cat.id);
+    setSelectedCatName(cat.name);
+    const subs = cat.subCategories || [];
+    setSubCategories(subs);
+    if (subCategoryName) {
+      const match = subs.find((s) => {
+        const name = typeof s === 'string' ? s : s.name;
+        return name?.toLowerCase() === String(subCategoryName).toLowerCase();
+      });
+      setSelectedSubCat(match ? (typeof match === 'string' ? match : match.name) : '');
+    } else {
+      setSelectedSubCat('');
+    }
+    return true;
+  };
+
+  const fillFormFromAiDraft = (draft) => {
+    const applied = [];
+    const skipped = [];
+
+    if (draft.title) {
+      if (!title.trim()) {
+        setTitle(draft.title);
+        applied.push('title');
+      } else {
+        skipped.push('title');
+      }
+    }
+
+    if (draft.category) {
+      if (!selectedCatId) {
+        if (applyCategoryFromName(draft.category, draft.subCategory)) {
+          applied.push('category');
+          if (draft.subCategory) applied.push('subcategory');
+        }
+      } else {
+        skipped.push('category');
+      }
+    } else if (draft.subCategory && selectedCatId && !selectedSubCat) {
+      applyCategoryFromName(selectedCatName, draft.subCategory);
+      applied.push('subcategory');
+    }
+
+    if (draft.description) {
+      if (!description.trim()) {
+        animateDescription(draft.description);
+        applied.push('description');
+      } else {
+        skipped.push('description');
+      }
+    }
+
+    setAiDraftMeta({
+      applied,
+      skipped,
+      confidence: draft.confidence || {},
+      notes: draft.notes || '',
+      attributes: draft.visibleAttributes || {},
+    });
+
+    return { applied, skipped };
+  };
+
+  const fillWithAiFromPhotos = async () => {
+    if (!user) {
+      showToast('Please sign in to use AI fill.', 'error');
+      return;
+    }
+    if (!images.length && !existingImages.length) {
+      showToast('Add at least one photo first.', 'error');
+      return;
+    }
+    if (!images.length) {
+      showToast('Add a new photo to analyze (existing listing photos aren’t re-uploaded).', 'error');
+      return;
+    }
+
+    setVisionLoading(true);
+    setAiDraftMeta(null);
+    try {
+      const formData = new FormData();
+      images.slice(0, 5).forEach((img) => formData.append('images', img));
+      formData.append(
+        'categories',
+        JSON.stringify(
+          categories.map((c) => ({
+            name: c.name,
+            subCategories: (c.subCategories || []).map((s) =>
+              typeof s === 'string' ? s : s.name,
+            ),
+          })),
+        ),
+      );
+
+      const token = localStorage.getItem('authToken');
+      const res = await fetch(`${API}/api/ads/extractAdFromImages`, {
+        method: 'POST',
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: formData,
+      });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(body.message || body.error || 'AI analysis failed');
+      }
+
+      const draft = body.data || {};
+      const { applied } = fillFormFromAiDraft(draft);
+
+      if (!applied.length) {
+        showToast(
+          draft.notes
+            || 'Couldn’t fill fields confidently — try clearer photos or fill manually.',
+          'error',
+        );
+      } else {
+        showToast(
+          `AI filled ${applied.join(', ')}. Review, then add price & location.`,
+          'success',
+        );
+      }
+    } catch (err) {
+      showToast(err.message || 'AI photo analysis failed.', 'error');
+    } finally {
+      setVisionLoading(false);
+    }
   };
 
   const generateAiDescription = async () => {
@@ -304,8 +448,8 @@ export default function PostAdPage() {
 
       const token = localStorage.getItem('authToken');
       const url = editingAd
-        ? `https://e4u-backend.onrender.com/api/ads/edit/${editingAd.id}`
-        : 'https://e4u-backend.onrender.com/api/ads/postAdd';
+        ? `${API}/api/ads/edit/${editingAd.id}`
+        : `${API}/api/ads/postAdd`;
       const method = editingAd ? 'PUT' : 'POST';
       const res = await fetch(url, {
         method,
@@ -332,6 +476,68 @@ export default function PostAdPage() {
         )}
 
         <div className="form-card">
+          <label className="form-label">Photos</label>
+          <p className="form-hint">
+            Add a few clear photos, then let AI draft the title, category, and description.
+            You still set price and location.
+          </p>
+          <button className="img-picker-btn" type="button" onClick={() => fileRef.current?.click()}>
+            <Camera size={18} />
+            <span>Add Photos ({images.length + existingImages.length}/8)</span>
+          </button>
+          <input type="file" ref={fileRef} accept="image/*" multiple style={{ display: 'none' }} onChange={handleImagePick} />
+
+          <div className="img-preview-row">
+            {existingImages.map((src, i) => (
+              <div key={`ex-${i}`} className="img-preview-wrap">
+                <img className="img-preview" src={src} alt="" />
+                <button className="img-remove-btn" type="button" onClick={() => removeExisting(i)}>✕</button>
+              </div>
+            ))}
+            {images.map((file, i) => (
+              <div key={`new-${i}`} className="img-preview-wrap">
+                <img className="img-preview" src={URL.createObjectURL(file)} alt="" />
+                <button className="img-remove-btn" type="button" onClick={() => removeImage(i)}>✕</button>
+              </div>
+            ))}
+          </div>
+
+          {(images.length > 0 || existingImages.length > 0) && (
+            <button
+              type="button"
+              className="ai-fill-btn"
+              onClick={fillWithAiFromPhotos}
+              disabled={visionLoading || !user || images.length === 0}
+            >
+              <Sparkles size={16} />
+              {visionLoading ? 'Analyzing photos…' : 'Fill form with AI'}
+            </button>
+          )}
+
+          {aiDraftMeta && (
+            <div className="ai-draft-banner">
+              <div className="ai-draft-banner-title">AI draft ready — review before posting</div>
+              <p className="ai-draft-banner-text">
+                {aiDraftMeta.applied?.length
+                  ? `Filled: ${aiDraftMeta.applied.join(', ')}.`
+                  : 'No high-confidence fields were filled.'}
+                {' '}Price and location stay manual.
+                {aiDraftMeta.skipped?.length
+                  ? ` Skipped existing: ${aiDraftMeta.skipped.join(', ')}.`
+                  : ''}
+              </p>
+              {!!Object.keys(aiDraftMeta.confidence || {}).length && (
+                <div className="ai-draft-confidence">
+                  {Object.entries(aiDraftMeta.confidence).map(([key, value]) => (
+                    <span key={key} className={`ai-conf-chip${Number(value) >= 0.6 ? ' is-ok' : ' is-low'}`}>
+                      {key} {Math.round(Number(value) * 100)}%
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           <label className="form-label">Title *</label>
           <input className="form-input" type="text" placeholder="e.g. iPhone 13 Pro Max" value={title} onChange={e => setTitle(e.target.value)} />
 
@@ -545,28 +751,6 @@ export default function PostAdPage() {
             aiLoading={aiLoading}
             aiButtonLabel={aiButtonLabel}
           />
-
-          <label className="form-label">Images (optional)</label>
-          <button className="img-picker-btn" type="button" onClick={() => fileRef.current?.click()}>
-            <Camera size={18} />
-            <span>Add Photos ({images.length + existingImages.length}/8)</span>
-          </button>
-          <input type="file" ref={fileRef} accept="image/*" multiple style={{ display: 'none' }} onChange={handleImagePick} />
-
-          <div className="img-preview-row">
-            {existingImages.map((src, i) => (
-              <div key={`ex-${i}`} className="img-preview-wrap">
-                <img className="img-preview" src={src} alt="" />
-                <button className="img-remove-btn" onClick={() => removeExisting(i)}>✕</button>
-              </div>
-            ))}
-            {images.map((file, i) => (
-              <div key={`new-${i}`} className="img-preview-wrap">
-                <img className="img-preview" src={URL.createObjectURL(file)} alt="" />
-                <button className="img-remove-btn" onClick={() => removeImage(i)}>✕</button>
-              </div>
-            ))}
-          </div>
         </div>
 
         <button className="submit-btn" onClick={handleSubmit} disabled={submitting || !user}>
