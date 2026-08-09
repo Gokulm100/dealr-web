@@ -8,19 +8,26 @@ import { SkeletonMyAdRow } from '../components/Skeleton';
 import SeededBadge from '../components/SeededBadge';
 
 const FALLBACK = 'https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg';
+const PAGE_SIZE = 10;
 
 export default function MyAdsPage() {
   const { user, apiFetch, navigate, showToast, showModal, mapListing, hasConsented } = useApp();
   const [ads, setAds] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalAds, setTotalAds] = useState(0);
   const [soldModalAd, setSoldModalAd] = useState(null);
   const [postSaleReminder, setPostSaleReminder] = useState(null);
   const [reviewTarget, setReviewTarget] = useState(null);
   const [pendingReviews, setPendingReviews] = useState([]);
 
-  const load = async () => {
+  const load = async (pageNum = 1) => {
     if (!user) {
       setAds([]);
+      setPage(1);
+      setTotalPages(1);
+      setTotalAds(0);
       setLoading(false);
       return;
     }
@@ -31,10 +38,13 @@ export default function MyAdsPage() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ id: user._id })
+        body: JSON.stringify({ id: user._id, page: pageNum, limit: PAGE_SIZE })
       });
       const data = Array.isArray(result) ? result : (result.ads || result.data || []);
       setAds(data.map(mapListing));
+      setPage(Number(result?.page) || pageNum);
+      setTotalPages(Math.max(1, Number(result?.totalPages) || 1));
+      setTotalAds(Number(result?.total) || data.length);
     } catch { /* ignore */ }
     finally { setLoading(false); }
   };
@@ -68,7 +78,7 @@ export default function MyAdsPage() {
           body: JSON.stringify({ adId: ad.id })
         });
         showToast('Ad disabled.', 'success');
-        load();
+        load(page);
       } catch { showToast('Failed to disable ad.', 'error'); }
     });
   };
@@ -85,7 +95,7 @@ export default function MyAdsPage() {
           body: JSON.stringify({ adId: ad.id })
         });
         showToast('Ad enabled.', 'success');
-        load();
+        load(page);
       } catch { showToast('Failed to enable ad.', 'error'); }
     });
   };
@@ -100,6 +110,12 @@ export default function MyAdsPage() {
   const dismissPostSaleReminder = () => {
     setPostSaleReminder(null);
     showToast('You can leave a review anytime from Profile.', 'success');
+  };
+
+  const changePage = (nextPage) => {
+    if (loading || nextPage < 1 || nextPage > totalPages || nextPage === page) return;
+    load(nextPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (!user) {
@@ -134,7 +150,14 @@ export default function MyAdsPage() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-        <div className="page-title" style={{ marginBottom: 0 }}>My Ads</div>
+        <div>
+          <div className="page-title" style={{ marginBottom: 0 }}>My Ads</div>
+          {!loading && totalAds > 0 && (
+            <div className="my-ads-total">
+              {totalAds} {totalAds === 1 ? 'listing' : 'listings'}
+            </div>
+          )}
+        </div>
         <button
           className="topbar-btn primary"
           style={{ background: 'var(--primary)', color: '#fff', borderColor: 'var(--primary)' }}
@@ -233,6 +256,30 @@ export default function MyAdsPage() {
           </div>
         </div>
       ))}
+
+      {!loading && totalPages > 1 && (
+        <nav className="my-ads-pagination" aria-label="My Ads pages">
+          <button
+            type="button"
+            className="my-ads-pagination-btn"
+            onClick={() => changePage(page - 1)}
+            disabled={page === 1}
+          >
+            Previous
+          </button>
+          <span className="my-ads-pagination-status" aria-live="polite">
+            Page <strong>{page}</strong> of {totalPages}
+          </span>
+          <button
+            type="button"
+            className="my-ads-pagination-btn"
+            onClick={() => changePage(page + 1)}
+            disabled={page === totalPages}
+          >
+            Next
+          </button>
+        </nav>
+      )}
 
       <MarkSoldModal
         ad={soldModalAd}
