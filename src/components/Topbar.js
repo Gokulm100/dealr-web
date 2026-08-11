@@ -1,6 +1,7 @@
 import React from 'react';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Smartphone } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { APP_DOWNLOAD_PATH } from '../content/siteInfo';
 import DealrLogo from './DealrLogo';
 import SearchBar from './SearchBar';
 
@@ -20,6 +21,9 @@ export default function Topbar() {
       <SearchBar />
 
       <div className="topbar-right">
+        <a className="topbar-btn topbar-btn-app" href={APP_DOWNLOAD_PATH}>
+          <Smartphone size={16} /> Get the app
+        </a>
         <button type="button" className="topbar-btn" onClick={() => navigate('post')}>
           <PlusCircle size={16} /> Post Ad
         </button>

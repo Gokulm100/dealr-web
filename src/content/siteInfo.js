@@ -1,6 +1,20 @@
 export const SUPPORT_EMAIL = 'support@dealrapp.in';
 export const TAGLINE = 'Deal with the Right App!';
 
+/** Static download landing page (not an in-app SPA route). */
+export const APP_DOWNLOAD_PATH = '/app';
+
+/**
+ * Direct APK URL hosted on dealrapp.in.
+ * Override with REACT_APP_ANDROID_APK_URL when swapping hosts (e.g. Play Store later).
+ */
+export const ANDROID_APK_URL =
+  process.env.REACT_APP_ANDROID_APK_URL || '/downloads/dealr.apk';
+
+/** Shown until Play listing is live — then point CTAs at the Play URL instead. */
+export const PLAY_STORE_STATUS = 'coming_soon';
+export const PLAY_STORE_URL = process.env.REACT_APP_PLAY_STORE_URL || '';
+
 export const ABOUT_INTRO =
   'Dealr is a local marketplace built to help people buy and sell safely, quickly, and with confidence — right in their neighbourhood.';
 
