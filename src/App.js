@@ -4,6 +4,7 @@ import Topbar from './components/Topbar';
 import Sidebar from './components/Sidebar';
 import MobileNav from './components/MobileNav';
 import BetaBanner from './components/BetaBanner';
+import AppDownloadBanner from './components/AppDownloadBanner';
 import { ToastContainer, ModalDialog } from './components/UI';
 import HomePage from './pages/HomePage';
 import AdDetailPage from './pages/AdDetailPage';
@@ -51,6 +52,7 @@ function AppShell() {
           <PageRouter />
         </main>
       </div>
+      <AppDownloadBanner />
       <MobileNav />
       <ToastContainer />
       <ModalDialog />

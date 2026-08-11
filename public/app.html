@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Get the Dealr app – Android</title>
+    <meta
+      name="description"
+      content="Download the Dealr Android app. Buy and sell locally in Kerala. Google Play coming soon."
+    />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#378cf6" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #378cf6;
+        --primary-dark: #1e4fd6;
+        --text: #0f172a;
+        --muted: #64748b;
+        --bg: #f8fafc;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --info-bg: #eff6ff;
+        --info-border: #bfdbfe;
+        --info-text: #1e3a8a;
+        --warn-bg: #fffbeb;
+        --warn-border: #fde68a;
+        --warn-text: #92400e;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(ellipse 80% 50% at 10% -10%, rgba(55, 140, 246, 0.18), transparent 55%),
+          radial-gradient(ellipse 60% 40% at 100% 0%, rgba(14, 165, 233, 0.12), transparent 50%),
+          var(--bg);
+        line-height: 1.65;
+      }
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 32px 20px 64px;
+      }
+      .brand {
+        font-family: Sora, Inter, sans-serif;
+        font-weight: 800;
+        font-size: 28px;
+        color: var(--primary);
+        letter-spacing: -0.03em;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .brand img {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+      }
+      .brand span { color: var(--text); }
+      h1 {
+        font-family: Sora, Inter, sans-serif;
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin: 22px 0 8px;
+        line-height: 1.2;
+      }
+      .lead {
+        color: var(--muted);
+        font-size: 16px;
+        margin: 0 0 22px;
+        max-width: 34em;
+      }
+      .banner {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        background: var(--info-bg);
+        border: 1px solid var(--info-border);
+        color: var(--info-text);
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-size: 14px;
+        margin-bottom: 20px;
+      }
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border-radius: 12px;
+        padding: 14px 20px;
+        font-size: 15px;
+        font-weight: 800;
+        font-family: Sora, Inter, sans-serif;
+        text-decoration: none;
+        border: 1px solid transparent;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(30, 79, 214, 0.22);
+      }
+      .btn-primary:hover { filter: brightness(1.05); }
+      .btn-secondary {
+        background: #fff;
+        color: var(--text);
+        border-color: var(--border);
+      }
+      .btn-secondary:hover { background: #f8fafc; }
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 22px 24px;
+        margin-bottom: 16px;
+      }
+      h2 {
+        font-family: Sora, Inter, sans-serif;
+        font-size: 17px;
+        font-weight: 700;
+        margin: 0 0 10px;
+      }
+      ol, ul {
+        margin: 8px 0 0;
+        padding-left: 20px;
+      }
+      li { margin-bottom: 8px; }
+      .muted { color: var(--muted); font-size: 14px; }
+      .warn {
+        background: var(--warn-bg);
+        border: 1px solid var(--warn-border);
+        color: var(--warn-text);
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-size: 14px;
+        margin-bottom: 16px;
+      }
+      a { color: var(--primary); }
+      .footer {
+        margin-top: 28px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .play-soon {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #f1f5f9;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <a class="brand" href="/">
+        <img src="/app-mark.png" alt="" width="36" height="36" />
+        Dealr
+      </a>
+      <h1>Get the Dealr Android app</h1>
+      <p class="lead">
+        Install Dealr on your phone to post ads, chat with buyers and sellers, and get AI-powered listing help — built for local deals in Kerala.
+      </p>
+
+      <div class="banner">
+        <div>
+          <strong>Google Play approval is pending.</strong>
+          Meanwhile you can download the official Android APK from Dealr below. We will switch this page to Play Store as soon as it goes live.
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="btn btn-primary" id="download-apk" href="/downloads/dealr.apk" download="dealr.apk">
+          Download for Android
+        </a>
+        <a class="btn btn-secondary" href="/">Open Dealr on the web</a>
+      </div>
+      <div class="play-soon" aria-label="Google Play status">Google Play — coming soon</div>
+
+      <div class="card" style="margin-top: 22px">
+        <h2>How to install</h2>
+        <ol>
+          <li>Tap <b>Download for Android</b> and open the APK when it finishes.</li>
+          <li>If Android asks, allow installs from your browser (Chrome / Files).</li>
+          <li>Open Dealr and sign in with Google.</li>
+        </ol>
+        <p class="muted" style="margin: 14px 0 0">
+          Package: <code>com.dealr.app</code> · Version 1.0.1 · Direct from dealrapp.in
+        </p>
+      </div>
+
+      <div class="warn">
+        Only download Dealr from <b>dealrapp.in</b> or Google Play (when available). Avoid random APK sites.
+        When Play goes live, uninstall this build first if Android blocks the update, then install from Play.
+      </div>
+
+      <div class="card">
+        <h2>Need help?</h2>
+        <p class="muted" style="margin: 0">
+          Email
+          <a href="mailto:support@dealrapp.in">support@dealrapp.in</a>
+          if the install fails or you see a security warning you are unsure about.
+        </p>
+      </div>
+
+      <p class="footer">
+        <a href="/">Back to Dealr</a>
+        ·
+        <a href="/privacy">Privacy</a>
+        ·
+        <a href="/delete-account">Delete account</a>
+      </p>
+    </div>
+  </body>
+</html>

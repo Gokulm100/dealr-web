@@ -1,6 +1,7 @@
 import React from 'react';
-import { Home, MessageCircle, PlusCircle, Volume2, User, Lock, Shield, Info, Mail } from 'lucide-react';
+import { Home, MessageCircle, PlusCircle, Volume2, User, Lock, Shield, Info, Mail, Smartphone } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { APP_DOWNLOAD_PATH } from '../content/siteInfo';
 
 const navItems = [
   { id: 'home', label: 'Home', Icon: Home },
@@ -45,6 +46,9 @@ export default function Sidebar() {
         )}
       </div>
       <div className="sidebar-footer">
+        <a className="nav-item" href={APP_DOWNLOAD_PATH}>
+          <Smartphone size={18} /> Get the app
+        </a>
         <button
           className={`nav-item${currentPage === 'about' ? ' active' : ''}`}
           onClick={() => navigate('about')}
