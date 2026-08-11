@@ -1,10 +1,24 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   MapPin, IndianRupee, SlidersHorizontal, X, ChevronDown, RotateCcw,
-  Search, Sparkles, ArrowUpDown,
+  Search, ArrowUpDown, LayoutGrid, Smartphone, Home, Car,
+  Armchair, Package,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { filterLocationsByQuery } from '../utils/locationFilter';
+
+const CATEGORY_ICONS = {
+  All: LayoutGrid,
+  Electronics: Smartphone,
+  'Real Estate': Home,
+  Vehicles: Car,
+  Furniture: Armchair,
+  Other: Package,
+};
+
+function categoryIcon(name) {
+  return CATEGORY_ICONS[name] || Package;
+}
 
 const PRICE_PRESETS = [
   { id: 'any', label: 'Any', min: '', max: '' },
@@ -244,27 +258,48 @@ export default function FilterBar() {
       )}
 
       <section className="filter-section filter-section-categories">
-        <span className="filter-section-label">Categories</span>
-        <div className="pills-scroll-wrap">
-          <div className="pills-row">
-            {allCats.map(cat => (
-              <button
-                key={cat}
-                type="button"
-                className={`pill${selectedCategory === cat ? ' active' : ''}`}
-                onClick={() => handleCategoryClick(cat)}
-              >
-                {cat === 'All' && <Sparkles size={13} className="pill-icon" />}
-                {cat}
-              </button>
-            ))}
+        <div className="filter-section-label-row">
+          <span className="filter-section-label">Categories</span>
+          {selectedCategory !== 'All' ? (
+            <button
+              type="button"
+              className="filter-section-clear"
+              onClick={() => handleCategoryClick('All')}
+            >
+              Clear
+            </button>
+          ) : (
+            <span className="filter-section-hint">Swipe to explore</span>
+          )}
+        </div>
+        <div className="cat-cards-scroll">
+          <div className="cat-cards-row" role="listbox" aria-label="Categories">
+            {allCats.map(cat => {
+              const Icon = categoryIcon(cat);
+              const active = selectedCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  role="option"
+                  aria-selected={active}
+                  className={`cat-card${active ? ' active' : ''}`}
+                  onClick={() => handleCategoryClick(cat)}
+                >
+                  <span className="cat-card-icon" aria-hidden="true">
+                    <Icon size={22} strokeWidth={1.75} />
+                  </span>
+                  <span className="cat-card-label">{cat}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {subCategories.length > 0 && (
         <section className="filter-section filter-section-sub">
-          <span className="filter-section-label">Refine by type</span>
+          <span className="filter-section-label">Refine</span>
           <div className="pills-scroll-wrap">
             <div className="sub-pills-row">
               {subCategories.map(sub => {
