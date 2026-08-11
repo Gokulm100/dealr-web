@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import {
   MapPin, IndianRupee, SlidersHorizontal, X, ChevronDown, RotateCcw,
-  Search, Sparkles, ArrowUpDown, LayoutGrid, Smartphone, Home, Car,
+  Search, ArrowUpDown, LayoutGrid, Smartphone, Home, Car,
   Armchair, Package,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
