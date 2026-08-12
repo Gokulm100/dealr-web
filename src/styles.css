@@ -4130,6 +4130,76 @@ button, input, textarea, select {
   box-shadow: 0 14px 28px rgba(30, 79, 214, 0.28);
 }
 .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; filter: none; }
+.facebook-share-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 14px 16px;
+  border: 1px solid #dbe7fb;
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, #f8fbff 0%, #eef4ff 100%);
+  cursor: pointer;
+}
+.facebook-share-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.facebook-share-toggle-box {
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  border: 1.5px solid #93c5fd;
+  background: #fff;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.facebook-share-toggle input:checked + .facebook-share-toggle-box {
+  background: #1877f2;
+  border-color: #1877f2;
+}
+.facebook-share-toggle-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.facebook-share-toggle-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+.facebook-share-toggle.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.78;
+}
+.facebook-share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eef4ff !important;
+  border-color: #bfdbfe !important;
+  color: #1877f2 !important;
+}
+.facebook-share-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.facebook-share-loading {
+  padding: 28px 8px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.owner-ad-btn-facebook {
+  background: #eef4ff;
+  border-color: #bfdbfe;
+  color: #1877f2;
+}
 .location-dropdown { position: relative; }
 .location-list {
   position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 10;

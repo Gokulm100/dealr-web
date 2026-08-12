@@ -11,7 +11,7 @@ import {
 import { emitJoin } from '../utils/socket';
 import { confirmAndReportUser } from '../utils/reportUser';
 import { ArrowLeft, MapPin, Eye, Clock, Tag, User, Send, Shield, Flag, MessageCircle, ChevronRight, Sparkles, ArrowUp } from 'lucide-react';
-import { useApp } from '../context/AppContext';
+import { useApp, mapListing } from '../context/AppContext';
 import AiAnalytics from '../components/AiAnalytics';
 import SimilarAds from '../components/SimilarAds';
 import ReportAdModal from '../components/ReportAdModal';
@@ -20,6 +20,7 @@ import SellerTrustLine from '../components/SellerTrustLine';
 import ReviewModal from '../components/ReviewModal';
 import OwnerAdActions from '../components/OwnerAdActions';
 import SeededBadge, { SeededNotice } from '../components/SeededBadge';
+import { getAdIdFromLocation } from '../utils/facebookShare';
 
 const FALLBACK = 'https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg';
 
@@ -375,14 +376,45 @@ export default function AdDetailPage() {
   const listingFromNav = pageExtra.listing;
   const returnTo = pageExtra.returnTo || 'home';
   const adReturnTo = pageExtra.adReturnTo || returnTo;
-  const [listing, setListing] = useState(listingFromNav);
+  const [listing, setListing] = useState(listingFromNav || null);
+  const [listingLoading, setListingLoading] = useState(!listingFromNav && !!getAdIdFromLocation());
+  const [listingError, setListingError] = useState('');
   const [reportOpen, setReportOpen] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewStatus, setReviewStatus] = useState(null);
 
   useEffect(() => {
-    setListing(listingFromNav);
+    setListing(listingFromNav || null);
+    setListingError('');
+    if (listingFromNav) setListingLoading(false);
   }, [listingFromNav]);
+
+  useEffect(() => {
+    if (listingFromNav) return undefined;
+    const adId = getAdIdFromLocation();
+    if (!adId) {
+      setListingLoading(false);
+      setListingError('This listing could not be found.');
+      return undefined;
+    }
+    let cancelled = false;
+    setListingLoading(true);
+    setListingError('');
+    (async () => {
+      try {
+        const raw = await apiFetch(`/api/ads/${adId}`);
+        if (cancelled) return;
+        const mapped = mapListing(raw);
+        setListing(mapped);
+        window.history.replaceState({}, '', `/?ad=${encodeURIComponent(mapped.id)}`);
+      } catch {
+        if (!cancelled) setListingError('This listing could not be found.');
+      } finally {
+        if (!cancelled) setListingLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [listingFromNav, apiFetch]);
 
   useEffect(() => {
     if (!user || !listing?.id) return;
@@ -397,7 +429,35 @@ export default function AdDetailPage() {
     return () => { cancelled = true; };
   }, [user, listing?.id, apiFetch]);
 
-  if (!listing) return null;
+  if (listingLoading) {
+    return (
+      <div className="detail-page">
+        <div className="detail-back-bar">
+          <button className="back-btn" type="button" onClick={() => navigate(returnTo)}><ArrowLeft size={18} /></button>
+          <div className="detail-header-title">Loading listing…</div>
+        </div>
+        <div className="facebook-share-loading">Opening this ad…</div>
+      </div>
+    );
+  }
+
+  if (!listing) {
+    return (
+      <div className="detail-page">
+        <div className="detail-back-bar">
+          <button className="back-btn" type="button" onClick={() => navigate('home')}><ArrowLeft size={18} /></button>
+          <div className="detail-header-title">Listing unavailable</div>
+        </div>
+        <div className="empty-state">
+          <span className="empty-title">{listingError || 'This listing could not be found.'}</span>
+          <span className="empty-sub">It may have been removed or the link is no longer valid.</span>
+          <button className="submit-btn" style={{ marginTop: 16, width: 'auto', padding: '10px 24px' }} onClick={() => navigate('home')}>
+            Browse ads
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const isOwner = user?._id && (user._id === listing.sellerId || user._id === listing.seller?._id);
 

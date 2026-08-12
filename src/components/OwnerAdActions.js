@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Edit, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import MarkSoldModal from './MarkSoldModal';
 import PostSaleReminderModal from './PostSaleReminderModal';
 import ReviewModal from './ReviewModal';
+import FacebookMark from './FacebookMark';
+import { getFacebookShareStatus, shareAdToFacebook } from '../utils/facebookShare';
 
 export default function OwnerAdActions({ ad, onAdUpdated }) {
   const { navigate, apiFetch, showToast, showModal } = useApp();
@@ -11,8 +13,32 @@ export default function OwnerAdActions({ ad, onAdUpdated }) {
   const [postSaleReminder, setPostSaleReminder] = useState(null);
   const [reviewTarget, setReviewTarget] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [facebookConfigured, setFacebookConfigured] = useState(false);
+  const [sharing, setSharing] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    getFacebookShareStatus().then((status) => {
+      if (!cancelled) setFacebookConfigured(!!status.configured);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   if (!ad) return null;
+
+  const canShareToFacebook = facebookConfigured && !ad.isSold && ad.isActive !== false && !ad.isSeeded;
+
+  const shareToFacebook = async () => {
+    setSharing(true);
+    try {
+      await shareAdToFacebook(ad.id, localStorage.getItem('authToken'));
+      showToast('Shared on the Dealr Facebook page.', 'success');
+    } catch (err) {
+      showToast(err.message || 'Could not share to Facebook.', 'error');
+    } finally {
+      setSharing(false);
+    }
+  };
 
   if (ad.isSold) {
     return (
@@ -91,6 +117,17 @@ export default function OwnerAdActions({ ad, onAdUpdated }) {
           >
             <CheckCircle size={15} /> Mark Sold
           </button>
+          {canShareToFacebook && (
+            <button
+              type="button"
+              className="owner-ad-btn owner-ad-btn-facebook"
+              onClick={shareToFacebook}
+              disabled={busy || sharing}
+            >
+              <FacebookMark />
+              {sharing ? 'Sharing…' : 'Share to Facebook'}
+            </button>
+          )}
         </div>
       </div>
 

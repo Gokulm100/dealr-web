@@ -3,6 +3,7 @@ import { Camera, AlertCircle, X, ChevronLeft, Check } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import AiTextArea from '../components/aiTextArea';
 import { GeminiAnalyticsDefs, GeminiSparkles } from '../components/geminiBrand';
+import { extractCreatedAdId, getFacebookShareStatus, shareAdToFacebook } from '../utils/facebookShare';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'https://e4u-backend.onrender.com';
 
@@ -37,6 +38,8 @@ export default function PostAdPage() {
   const [visionLoading, setVisionLoading] = useState(false);
   const [aiDraftMeta, setAiDraftMeta] = useState(null);
   const [descInsights, setDescInsights] = useState({ total: 0, completed: 0, missing: 0, progress: 0, nextMissingLabel: '' });
+  const [facebookConfigured, setFacebookConfigured] = useState(false);
+  const [shareToFacebook, setShareToFacebook] = useState(true);
   const fileRef = useRef(null);
 
   const filteredLocations = locations.filter(l =>
@@ -203,6 +206,14 @@ export default function PostAdPage() {
       setSelectedLocation({ id: null, name: editingAd.location });
     }
   }, [editingAd, locations]);
+
+  useEffect(() => {
+    let cancelled = false;
+    getFacebookShareStatus().then((status) => {
+      if (!cancelled) setFacebookConfigured(!!status.configured);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     if (editingAd) {
@@ -457,8 +468,23 @@ export default function PostAdPage() {
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
-      if (!res.ok) throw new Error('Failed');
-      showToast(editingAd ? 'Ad updated!' : 'Ad posted successfully!', 'success');
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.message || 'Failed');
+      const createdAdId = extractCreatedAdId(body);
+
+      if (!editingAd && shareToFacebook && facebookConfigured && createdAdId) {
+        try {
+          await shareAdToFacebook(createdAdId, token);
+          showToast('Ad posted and shared on the Dealr Facebook page!', 'success');
+        } catch (shareErr) {
+          showToast(
+            `Ad posted, but Facebook sharing failed: ${shareErr.message}`,
+            'error',
+          );
+        }
+      } else {
+        showToast(editingAd ? 'Ad updated!' : 'Ad posted successfully!', 'success');
+      }
       fetchListings(1, true);
       fetchLocations();
       navigate('my-ads');
@@ -761,10 +787,34 @@ export default function PostAdPage() {
             aiLoading={aiLoading}
             aiButtonLabel={aiButtonLabel}
           />
+
+          {(!editingAd && (facebookConfigured || user?.isAdmin)) && (
+            <label className={`facebook-share-toggle${!facebookConfigured ? ' is-disabled' : ''}`}>
+              <input
+                type="checkbox"
+                checked={facebookConfigured && shareToFacebook}
+                onChange={(e) => setShareToFacebook(e.target.checked)}
+                disabled={!facebookConfigured}
+              />
+              <span className="facebook-share-toggle-box" aria-hidden="true">
+                {facebookConfigured && shareToFacebook && <Check size={12} strokeWidth={3} />}
+              </span>
+              <span className="facebook-share-toggle-copy">
+                <span className="facebook-share-toggle-title">Also share on the Dealr Facebook page</span>
+                <span className="facebook-share-toggle-hint">
+                  {facebookConfigured
+                    ? 'Posts this listing to Dealr’s Facebook page so more local buyers can find it.'
+                    : 'Connect the Dealr Facebook page in Vercel (FACEBOOK_PAGE_ID and FACEBOOK_PAGE_ACCESS_TOKEN) to enable this.'}
+                </span>
+              </span>
+            </label>
+          )}
         </div>
 
         <button className="submit-btn" onClick={handleSubmit} disabled={submitting || !user}>
-          {submitting ? 'Submitting...' : (editingAd ? 'Save Changes' : 'Post Ad')}
+          {submitting
+            ? (shareToFacebook && facebookConfigured && !editingAd ? 'Posting & sharing...' : 'Submitting...')
+            : (editingAd ? 'Save Changes' : 'Post Ad')}
         </button>
       </div>
     </div>

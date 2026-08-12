@@ -4,11 +4,47 @@ import { initSocket, disconnectSocket, getSocket, subscribeChatMessages, emitJoi
 import { parseChatPayload } from '../utils/chatSocket';
 import { formatLocationName, toApiLocationFilter } from '../utils/locationFilter';
 import { isSeededDescription, stripSeededMarker } from '../utils/seededListing';
+import { getAdIdFromLocation } from '../utils/facebookShare';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'https://e4u-backend.onrender.com';
 const LIMIT = 10;
 
 const AppContext = createContext(null);
+
+export function mapListing(item) {
+  const rawDescription = item.description || '';
+  const seeded = isSeededDescription(rawDescription);
+  return {
+    id: item._id,
+    title: item.title || '',
+    price: item.price || 0,
+    images: item.images?.length ? item.images : ['https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg'],
+    category: item.category?.name || item.category || 'General',
+    categoryId: item.category?._id || item.categoryId || '',
+    subCategory: item.subCategoryId?.name || item.subCategory || '',
+    location: item.location?.name || item.location || '',
+    views: item.views || 0,
+    reports: item.reportCounter || 0,
+    posted: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
+    createdAt: item.createdAt || item.posted || '',
+    description: seeded ? stripSeededMarker(rawDescription) : rawDescription,
+    seller: item.seller?.name || item.sellerName || 'Unknown',
+    sellerPic: item.seller?.profilePic || item.sellerPic || null,
+    sellerId: item.seller?._id || item.sellerId || '',
+    sellerRatingAvg: item.seller?.ratingAvg || 0,
+    sellerReviewCount: item.seller?.reviewCount || 0,
+    sellerCompletedSales: item.seller?.completedSales || 0,
+    sellerTrustScore: item.seller?.trustScore ?? 50,
+    sellerBadges: item.seller?.badges || [],
+    sellerSince: item.seller?.createdAt
+      ? new Date(item.seller.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
+      : '',
+    isSold: item.isSold === true,
+    isSeeded: seeded,
+    status: item.isSold ? 'sold' : (item.status || 'active'),
+    isActive: item.isActive === false ? false : true,
+  };
+}
 
 export function AppProvider({ children }) {
   const [user, setUser] = useState(() => {
@@ -19,9 +55,9 @@ export function AppProvider({ children }) {
     try { return JSON.parse(localStorage.getItem('user'))?.hasConsented || false; } catch { return false; }
   });
 
-  const [currentPage, setCurrentPage] = useState('home');
+  const [currentPage, setCurrentPage] = useState(() => (getAdIdFromLocation() ? 'detail' : 'home'));
   const [pageExtra, setPageExtra] = useState({});
-  const currentPageRef = useRef('home');
+  const currentPageRef = useRef(getAdIdFromLocation() ? 'detail' : 'home');
 
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -66,6 +102,19 @@ export function AppProvider({ children }) {
 
   const closeModal = useCallback(() => setModal(null), []);
 
+  const syncAdQuery = (page, extra = {}) => {
+    try {
+      const url = new URL(window.location.href);
+      const isDetailPage = page === 'detail' || page === 'ad-detail';
+      const adId = extra.listing?.id;
+      if (isDetailPage && adId) url.searchParams.set('ad', adId);
+      else url.searchParams.delete('ad');
+      const next = `${url.pathname}${url.search}${url.hash}` || '/';
+      const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      if (current !== next) window.history.replaceState({}, '', next);
+    } catch { /* ignore */ }
+  };
+
   const navigate = useCallback((page, extra = {}) => {
     const prevPage = currentPageRef.current;
     const nextExtra = { ...extra };
@@ -80,6 +129,7 @@ export function AppProvider({ children }) {
     currentPageRef.current = page;
     setCurrentPage(page);
     setPageExtra(nextExtra);
+    syncAdQuery(page, nextExtra);
     window.scrollTo(0, 0);
   }, []);
 
@@ -97,41 +147,6 @@ export function AppProvider({ children }) {
     setUser(null);
     setHasConsented(false);
   }, []);
-
-  const mapListing = (item) => {
-    const rawDescription = item.description || '';
-    const seeded = isSeededDescription(rawDescription);
-    return {
-      id: item._id,
-      title: item.title || '',
-      price: item.price || 0,
-      images: item.images?.length ? item.images : ['https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg'],
-      category: item.category?.name || item.category || 'General',
-      categoryId: item.category?._id || item.categoryId || '',
-      subCategory: item.subCategoryId?.name || item.subCategory || '',
-      location: item.location?.name || item.location || '',
-      views: item.views || 0,
-      reports: item.reportCounter || 0,
-      posted: item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '',
-      createdAt: item.createdAt || item.posted || '',
-      description: seeded ? stripSeededMarker(rawDescription) : rawDescription,
-      seller: item.seller?.name || item.sellerName || 'Unknown',
-      sellerPic: item.seller?.profilePic || item.sellerPic || null,
-      sellerId: item.seller?._id || item.sellerId || '',
-      sellerRatingAvg: item.seller?.ratingAvg || 0,
-      sellerReviewCount: item.seller?.reviewCount || 0,
-      sellerCompletedSales: item.seller?.completedSales || 0,
-      sellerTrustScore: item.seller?.trustScore ?? 50,
-      sellerBadges: item.seller?.badges || [],
-      sellerSince: item.seller?.createdAt
-        ? new Date(item.seller.createdAt).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' })
-        : '',
-      isSold: item.isSold === true,
-      isSeeded: seeded,
-      status: item.isSold ? 'sold' : (item.status || 'active'),
-      isActive: item.isActive == false ? false : true,
-    };
-  };
 
   const buildListingsQuery = useCallback(() => {
     const catObj = categories.find(c => c.name === selectedCategory);

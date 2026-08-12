@@ -1,5 +1,7 @@
 {
   "rewrites": [
+    { "source": "/ad/:id", "destination": "/api/og-ad?id=:id" },
+    { "source": "/ad/:id/", "destination": "/api/og-ad?id=:id" },
     { "source": "/privacy", "destination": "/privacy.html" },
     { "source": "/privacy/", "destination": "/privacy.html" },
     { "source": "/delete-account", "destination": "/delete-account.html" },
@@ -9,7 +11,7 @@
     { "source": "/manifest.json", "destination": "/manifest.json" },
     { "source": "/service-worker.js", "destination": "/service-worker.js" },
     { "source": "/favicon.ico", "destination": "/favicon.ico" },
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/((?!api/).*)", "destination": "/" }
   ],
   "headers": [
     {
