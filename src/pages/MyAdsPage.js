@@ -6,6 +6,8 @@ import PostSaleReminderModal from '../components/PostSaleReminderModal';
 import ReviewModal from '../components/ReviewModal';
 import { SkeletonMyAdRow } from '../components/Skeleton';
 import SeededBadge from '../components/SeededBadge';
+import FacebookMark from '../components/FacebookMark';
+import { getFacebookShareStatus, shareAdToFacebook } from '../utils/facebookShare';
 
 const FALLBACK = 'https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg';
 const PAGE_SIZE = 10;
@@ -21,6 +23,8 @@ export default function MyAdsPage() {
   const [postSaleReminder, setPostSaleReminder] = useState(null);
   const [reviewTarget, setReviewTarget] = useState(null);
   const [pendingReviews, setPendingReviews] = useState([]);
+  const [facebookConfigured, setFacebookConfigured] = useState(false);
+  const [sharingAdId, setSharingAdId] = useState(null);
 
   const load = async (pageNum = 1) => {
     if (!user) {
@@ -50,6 +54,14 @@ export default function MyAdsPage() {
   };
 
   useEffect(() => { load(); }, [user]); // eslint-disable-line
+
+  useEffect(() => {
+    let cancelled = false;
+    getFacebookShareStatus().then((status) => {
+      if (!cancelled) setFacebookConfigured(!!status.configured);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     if (!user) {
@@ -98,6 +110,18 @@ export default function MyAdsPage() {
         load(page);
       } catch { showToast('Failed to enable ad.', 'error'); }
     });
+  };
+
+  const handleShareToFacebook = async (ad) => {
+    setSharingAdId(ad.id);
+    try {
+      await shareAdToFacebook(ad.id, localStorage.getItem('authToken'));
+      showToast('Shared on the Dealr Facebook page.', 'success');
+    } catch (err) {
+      showToast(err.message || 'Could not share to Facebook.', 'error');
+    } finally {
+      setSharingAdId(null);
+    }
   };
 
   const handleSoldComplete = (target) => {
@@ -230,6 +254,16 @@ export default function MyAdsPage() {
                 >
                   Mark Sold
                 </button>
+                {facebookConfigured && ad.isActive !== false && !ad.isSeeded && (
+                  <button
+                    className="edit-btn facebook-share-btn"
+                    onClick={(e) => { e.stopPropagation(); handleShareToFacebook(ad); }}
+                    disabled={sharingAdId === ad.id}
+                  >
+                    <FacebookMark size={13} />
+                    {sharingAdId === ad.id ? 'Sharing…' : 'Facebook'}
+                  </button>
+                )}
               </>
             )}
             {ad.isSold && (() => {
