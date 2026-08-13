@@ -1719,22 +1719,6 @@ button, input, textarea, select {
   transition: background 0.15s, border-color 0.15s;
 }
 .detail-share-btn:hover { background: rgba(255, 255, 255, 0.26); }
-.detail-share-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 14px;
-  padding: 10px 14px;
-  border: 1px solid #bfdbfe;
-  border-radius: var(--radius-md);
-  background: #eff6ff;
-  color: var(--primary);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-}
-.detail-share-cta:hover { background: #dbeafe; }
 .chat-header-info { min-width: 0; }
 .chat-header-subtitle {
   margin-top: 2px;

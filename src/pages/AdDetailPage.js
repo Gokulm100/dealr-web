@@ -537,10 +537,6 @@ export default function AdDetailPage() {
               <div className="detail-meta-item"><Eye size={14} /> {listing.views} views</div>
               <div className="detail-meta-item"><Clock size={14} /> {listing.posted}</div>
             </div>
-            <button type="button" className="detail-share-cta" onClick={handleShare}>
-              <Share2 size={16} strokeWidth={2.25} />
-              Share this ad
-            </button>
             <GenuinityMeter views={listing.views} reports={listing.reports} embedded />
           </div>
 
