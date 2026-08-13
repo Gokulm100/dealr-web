@@ -22,7 +22,8 @@ export default function Topbar() {
 
       <div className="topbar-right">
         <a className="topbar-btn topbar-btn-app" href={APP_DOWNLOAD_PATH}>
-          <Smartphone size={16} /> Get the app
+          <Smartphone size={16} />
+          <span className="topbar-btn-label">Get the app</span>
         </a>
         <button type="button" className="topbar-btn" onClick={() => navigate('post')}>
           <PlusCircle size={16} /> Post Ad

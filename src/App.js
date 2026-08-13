@@ -43,7 +43,7 @@ function PageRouter() {
 
 function AppShell() {
   return (
-    <div>
+    <div className="app-root">
       <Topbar />
       <BetaBanner />
       <div className="app-body">

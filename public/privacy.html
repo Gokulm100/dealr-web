@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover" />
     <title>Privacy Policy – Dealr</title>
     <meta
       name="description"
@@ -30,6 +30,12 @@
         --success-text: #166534;
       }
       * { box-sizing: border-box; }
+      html, body {
+        overflow-x: hidden;
+        max-width: 100%;
+        -webkit-text-size-adjust: 100%;
+        touch-action: pan-y;
+      }
       body {
         margin: 0;
         font-family: Inter, system-ui, sans-serif;

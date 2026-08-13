@@ -53,7 +53,7 @@ function pageHtml({ title, description, image, canonical, appLink }) {
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover" />
   <title>${t}</title>
   <meta name="description" content="${d}" />
   <link rel="canonical" href="${url}" />

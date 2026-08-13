@@ -30,6 +30,15 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 :root {
   --primary: #2f7ff0;
   --primary-dark: #1e4fd6;
@@ -75,9 +84,20 @@ body {
   background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
+}
+
+#root, .app-root {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 button, input, textarea, select {
@@ -481,6 +501,9 @@ button, input, textarea, select {
   display: flex;
   padding-top: calc(var(--header-h) + var(--beta-banner-h));
   min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* ── SIDEBAR ── */
@@ -949,6 +972,7 @@ button, input, textarea, select {
   .filter-price-panel {
     left: 0;
     right: auto;
+    min-width: 0;
     width: min(300px, calc(100vw - 40px));
   }
 }
@@ -5462,6 +5486,38 @@ button, input, textarea, select {
 }
 
 @media (max-width: 768px) {
+  html {
+    touch-action: pan-y;
+  }
+  body {
+    background-attachment: scroll;
+    touch-action: pan-y;
+  }
+  .pills-row,
+  .sub-pills-row,
+  .aa-metric-grid--scroll,
+  .admin-table-wrap,
+  .img-preview-row {
+    touch-action: pan-x pan-y;
+  }
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  .app-body,
+  .main,
+  .topbar,
+  .filter-panel,
+  .detail-page,
+  .post-form {
+    max-width: 100%;
+  }
+  .main {
+    overflow-x: hidden;
+  }
+  .filter-price-panel {
+    min-width: 0;
+    width: min(300px, calc(100% - 8px));
+  }
   :root { --header-h: 112px; }
   .topbar {
     height: var(--header-h);
@@ -5469,6 +5525,7 @@ button, input, textarea, select {
     align-content: center;
     padding: 10px 12px;
     gap: 8px;
+    max-width: 100%;
   }
   .topbar-brand { min-width: 0; }
   .dealr-logo--title .dealr-wordmark { font-size: 28px; }
@@ -5487,8 +5544,7 @@ button, input, textarea, select {
   .topbar-right > .topbar-btn:not(.primary):not(.topbar-btn-app) { display: none; }
   .topbar-btn.primary,
   .topbar-btn-app { padding: 7px 12px; font-size: 12px; }
-  .topbar-btn-app span,
-  .topbar-btn-app { max-width: 118px; }
+  .topbar-btn-app { max-width: none; }
   .topbar-avatar { width: 34px; height: 34px; }
 
   .filter-panel-header {
@@ -5610,6 +5666,9 @@ button, input, textarea, select {
   .main { padding: 12px; padding-bottom: 78px; }
   .topbar { padding: 10px; }
   .topbar-search { height: 36px; padding: 0 10px; }
+  .dealr-logo--title .dealr-wordmark { font-size: 22px; letter-spacing: -0.8px; }
+  .topbar-btn-label { display: none; }
+  .topbar-btn-app { padding: 7px 9px; }
   .ads-grid { grid-template-columns: 1fr; }
   .my-ad-img { height: 150px; }
   .detail-meta { gap: 10px; }
