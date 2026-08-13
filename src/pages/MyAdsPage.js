@@ -116,7 +116,7 @@ export default function MyAdsPage() {
     setSharingAdId(ad.id);
     try {
       await shareAdToFacebook(ad.id, localStorage.getItem('authToken'));
-      showToast('Shared on the Dealr Facebook page.', 'success');
+      showToast('Facebook draft with photos is ready to publish.', 'success');
     } catch (err) {
       showToast(err.message || 'Could not share to Facebook.', 'error');
     } finally {
@@ -261,7 +261,7 @@ export default function MyAdsPage() {
                     disabled={sharingAdId === ad.id}
                   >
                     <FacebookMark size={13} />
-                    {sharingAdId === ad.id ? 'Sharing…' : 'Facebook'}
+                    {sharingAdId === ad.id ? 'Saving…' : 'FB draft'}
                   </button>
                 )}
               </>

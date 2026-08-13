@@ -475,7 +475,7 @@ export default function PostAdPage() {
       if (!editingAd && shareToFacebook && facebookConfigured && createdAdId) {
         try {
           await shareAdToFacebook(createdAdId, token);
-          showToast('Ad posted and shared on the Dealr Facebook page!', 'success');
+          showToast('Ad posted. A Facebook draft with photos is ready to publish.', 'success');
         } catch (shareErr) {
           showToast(
             `Ad posted, but Facebook sharing failed: ${shareErr.message}`,
@@ -800,10 +800,10 @@ export default function PostAdPage() {
                 {facebookConfigured && shareToFacebook && <Check size={12} strokeWidth={3} />}
               </span>
               <span className="facebook-share-toggle-copy">
-                <span className="facebook-share-toggle-title">Also share on the Dealr Facebook page</span>
+                <span className="facebook-share-toggle-title">Also save a Facebook draft with photos</span>
                 <span className="facebook-share-toggle-hint">
                   {facebookConfigured
-                    ? 'Posts this listing to Dealr’s Facebook page so more local buyers can find it.'
+                    ? 'Saves this listing with its photos as a draft on the Dealr Facebook page. Publish it from Meta Business Suite when you’re ready.'
                     : 'Connect the Dealr Facebook page in Vercel (FACEBOOK_PAGE_ID and FACEBOOK_PAGE_ACCESS_TOKEN) to enable this.'}
                 </span>
               </span>
