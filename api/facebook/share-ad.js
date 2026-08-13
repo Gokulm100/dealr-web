@@ -109,13 +109,22 @@ async function verifyUserToken(token) {
 }
 
 async function fetchAd(adId) {
-  const res = await fetch(`${API}/api/ads/${encodeURIComponent(adId)}`);
-  if (res.status === 404) return { missing: true };
-  if (!res.ok) throw new Error('Could not load this ad.');
-  return { ad: await res.json() };
+  const load = async () => {
+    const res = await fetch(`${API}/api/ads/${encodeURIComponent(adId)}`);
+    if (res.status === 404) return { missing: true };
+    if (!res.ok) throw new Error('Could not load this ad.');
+    return { ad: await res.json() };
+  };
+
+  let result = await load();
+  if (!result.missing && listingImages(result.ad).length === 0) {
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+    result = await load();
+  }
+  return result;
 }
 
-async function graphPost(path, body) {
+async function graphPostJson(path, body) {
   const res = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -125,14 +134,117 @@ async function graphPost(path, body) {
   return { ok: res.ok, data };
 }
 
-async function postToFacebookPage({ message, imageUrl, link }) {
+async function graphPostForm(path, params) {
+  const body = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') return;
+    body.append(key, String(value));
+  });
+  const res = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body,
+  });
+  const data = await res.json().catch(() => ({}));
+  return { ok: res.ok, data };
+}
+
+function listingImages(ad) {
+  const images = Array.isArray(ad?.images) ? ad.images : [];
+  return [...new Set(images.map(usableImage).filter(Boolean))].slice(0, 8);
+}
+
+async function uploadUnpublishedPhoto(pageId, accessToken, imageUrl) {
+  const viaUrl = await graphPostForm(`${pageId}/photos`, {
+    url: imageUrl,
+    published: 'false',
+    access_token: accessToken,
+  });
+  if (viaUrl.ok && viaUrl.data.id) return String(viaUrl.data.id);
+
+  const imgRes = await fetch(imageUrl);
+  if (!imgRes.ok) return null;
+  const buf = Buffer.from(await imgRes.arrayBuffer());
+  const contentType = (imgRes.headers.get('content-type') || 'image/jpeg').split(';')[0];
+  const ext = contentType.includes('png') ? 'png' : contentType.includes('webp') ? 'webp' : 'jpg';
+  const form = new FormData();
+  form.append('published', 'false');
+  form.append('access_token', accessToken);
+  form.append('source', new Blob([buf], { type: contentType }), `listing.${ext}`);
+
+  const res = await fetch(`https://graph.facebook.com/${GRAPH_VERSION}/${pageId}/photos`, {
+    method: 'POST',
+    body: form,
+  });
+  const data = await res.json().catch(() => ({}));
+  return res.ok && data.id ? String(data.id) : null;
+}
+
+async function postFeedWithMedia({ pageId, accessToken, message, mediaIds, asDraft }) {
+  const params = {
+    message,
+    published: asDraft ? 'false' : 'true',
+    access_token: accessToken,
+  };
+  if (asDraft) params.unpublished_content_type = 'DRAFT';
+  mediaIds.forEach((id, index) => {
+    params[`attached_media[${index}]`] = JSON.stringify({ media_fbid: id });
+  });
+  return graphPostForm(`${pageId}/feed`, params);
+}
+
+async function postToFacebookPage({ message, ad, link }) {
   const pageId = process.env.FACEBOOK_PAGE_ID;
   const accessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-  const image = usableImage(imageUrl);
+  const images = listingImages(ad);
 
-  if (image) {
-    const photo = await graphPost(`${pageId}/photos`, {
-      url: image,
+  // Facebook draft-with-images: upload unpublished photos, then attach them
+  // to a Business Suite DRAFT so the listing photos are in the post.
+  const mediaIds = [];
+  for (const imageUrl of images) {
+    try {
+      const photoId = await uploadUnpublishedPhoto(pageId, accessToken, imageUrl);
+      if (photoId) mediaIds.push(photoId);
+    } catch { /* try the next photo */ }
+  }
+
+  if (mediaIds.length) {
+    const draft = await postFeedWithMedia({
+      pageId,
+      accessToken,
+      message,
+      mediaIds,
+      asDraft: true,
+    });
+    if (draft.ok && draft.data.id) {
+      return { type: 'draft', id: draft.data.id, photoCount: mediaIds.length };
+    }
+
+    const live = await postFeedWithMedia({
+      pageId,
+      accessToken,
+      message,
+      mediaIds,
+      asDraft: false,
+    });
+    if (live.ok && live.data.id) {
+      return { type: 'photos', id: live.data.id, photoCount: mediaIds.length };
+    }
+  }
+
+  const textDraft = await graphPostForm(`${pageId}/feed`, {
+    message,
+    published: 'false',
+    unpublished_content_type: 'DRAFT',
+    access_token: accessToken,
+  });
+  if (textDraft.ok && textDraft.data.id) {
+    return { type: 'draft', id: textDraft.data.id, photoCount: 0 };
+  }
+
+  if (images[0]) {
+    const photo = await graphPostJson(`${pageId}/photos`, {
+      url: images[0],
       caption: message,
       published: true,
       access_token: accessToken,
@@ -142,7 +254,7 @@ async function postToFacebookPage({ message, imageUrl, link }) {
     }
   }
 
-  const feed = await graphPost(`${pageId}/feed`, {
+  const feed = await graphPostJson(`${pageId}/feed`, {
     message,
     link,
     access_token: accessToken,
@@ -228,11 +340,16 @@ module.exports = async function handler(req, res) {
     const link = `${APP_URL}/ad/${encodeURIComponent(adId)}`;
     const posted = await postToFacebookPage({
       message: composeCaption(ad, link),
-      imageUrl: Array.isArray(ad.images) ? ad.images[0] : '',
+      ad,
       link,
     });
 
-    sendJson(res, 200, { success: true, facebookPostId: posted.id, type: posted.type });
+    sendJson(res, 200, {
+      success: true,
+      facebookPostId: posted.id,
+      type: posted.type,
+      photoCount: posted.photoCount || 0,
+    });
   } catch (err) {
     sendJson(res, 502, { message: err.message || 'Could not share this ad to Facebook.' });
   }
