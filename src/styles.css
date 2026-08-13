@@ -1668,7 +1668,49 @@ button, input, textarea, select {
   display: flex; align-items: center; justify-content: center; transition: background 0.15s;
 }
 .back-btn:hover { background: rgba(255,255,255,0.25); }
-.detail-header-title { font-size: 16px; font-weight: 700; }
+.detail-header-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.detail-share-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.detail-share-btn:hover { background: rgba(255, 255, 255, 0.26); }
+.detail-share-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-md);
+  background: #eff6ff;
+  color: var(--primary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.detail-share-cta:hover { background: #dbeafe; }
 .chat-header-info { min-width: 0; }
 .chat-header-subtitle {
   margin-top: 2px;
