@@ -10,7 +10,7 @@ import {
 } from '../utils/chatSocket';
 import { emitJoin } from '../utils/socket';
 import { confirmAndReportUser } from '../utils/reportUser';
-import { ArrowLeft, MapPin, Eye, Clock, Tag, User, Send, Shield, Flag, MessageCircle, ChevronRight, Sparkles, ArrowUp } from 'lucide-react';
+import { ArrowLeft, MapPin, Eye, Clock, Tag, User, Send, Shield, Flag, MessageCircle, ChevronRight, Sparkles, ArrowUp, Share2 } from 'lucide-react';
 import { useApp, mapListing } from '../context/AppContext';
 import AiAnalytics from '../components/AiAnalytics';
 import SimilarAds from '../components/SimilarAds';
@@ -21,6 +21,7 @@ import ReviewModal from '../components/ReviewModal';
 import OwnerAdActions from '../components/OwnerAdActions';
 import SeededBadge, { SeededNotice } from '../components/SeededBadge';
 import { getAdIdFromLocation } from '../utils/facebookShare';
+import { shareListing } from '../utils/shareListing';
 
 const FALLBACK = 'https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg';
 
@@ -483,11 +484,31 @@ export default function AdDetailPage() {
     });
   };
 
+  const handleShare = async () => {
+    try {
+      const method = await shareListing(listing);
+      if (method === 'clipboard' || method === 'prompt') {
+        showToast('Listing link copied. Paste it in any app to share.', 'success');
+      }
+    } catch {
+      showToast('Could not share this listing. Copy the link from the address bar.', 'error');
+    }
+  };
+
   return (
     <div className="detail-page">
       <div className="detail-back-bar">
         <button className="back-btn" type="button" onClick={() => navigate(returnTo)}><ArrowLeft size={18} /></button>
         <div className="detail-header-title">{listing.title}</div>
+        <button
+          type="button"
+          className="detail-share-btn"
+          onClick={handleShare}
+          aria-label="Share this listing"
+        >
+          <Share2 size={16} strokeWidth={2.25} />
+          Share
+        </button>
       </div>
 
       <div className="detail-layout">
@@ -516,6 +537,10 @@ export default function AdDetailPage() {
               <div className="detail-meta-item"><Eye size={14} /> {listing.views} views</div>
               <div className="detail-meta-item"><Clock size={14} /> {listing.posted}</div>
             </div>
+            <button type="button" className="detail-share-cta" onClick={handleShare}>
+              <Share2 size={16} strokeWidth={2.25} />
+              Share this ad
+            </button>
             <GenuinityMeter views={listing.views} reports={listing.reports} embedded />
           </div>
 
