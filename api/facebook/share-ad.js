@@ -89,13 +89,13 @@ function composeCaption(ad, link) {
   const category = ad.category?.name || (typeof ad.category === 'string' ? ad.category : '');
   const sub = String(ad.subCategory || '').trim();
   const categoryLine = [category, sub && sub !== 'General' ? sub : ''].filter(Boolean).join(' · ');
-  const snippet = stripSeeded(ad.description).replace(/\s+/g, ' ').slice(0, 220);
+  const snippet = stripSeeded(ad.description).replace(/\s+/g, ' ').slice(0, 180);
   return [
     title,
     [price, location].filter(Boolean).join(' · '),
     categoryLine,
     snippet,
-    `View on Dealr: ${link}`,
+    link,
   ].filter(Boolean).join('\n\n');
 }
 
@@ -193,13 +193,48 @@ async function postFeedWithMedia({ pageId, accessToken, message, mediaIds, asDra
   return graphPostForm(`${pageId}/feed`, params);
 }
 
+async function postLinkToPage({ pageId, accessToken, message, link, asDraft }) {
+  const params = {
+    message,
+    link,
+    access_token: accessToken,
+  };
+  if (asDraft) {
+    params.published = 'false';
+    params.unpublished_content_type = 'DRAFT';
+  }
+  return graphPostForm(`${pageId}/feed`, params);
+}
+
 async function postToFacebookPage({ message, ad, link }) {
   const pageId = process.env.FACEBOOK_PAGE_ID;
   const accessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
-  const images = listingImages(ad);
 
-  // Facebook draft-with-images: upload unpublished photos, then attach them
-  // to a Business Suite DRAFT so the listing photos are in the post.
+  // For now, share a clickable link to the listing on Dealr. Facebook scrapes
+  // /ad/:id for the title, photo, and preview card.
+  const draftLink = await postLinkToPage({
+    pageId,
+    accessToken,
+    message,
+    link,
+    asDraft: true,
+  });
+  if (draftLink.ok && draftLink.data.id) {
+    return { type: 'draft-link', id: draftLink.data.id, link };
+  }
+
+  const liveLink = await postLinkToPage({
+    pageId,
+    accessToken,
+    message,
+    link,
+    asDraft: false,
+  });
+  if (liveLink.ok && liveLink.data.id) {
+    return { type: 'link', id: liveLink.data.id, link };
+  }
+
+  const images = listingImages(ad);
   const mediaIds = [];
   for (const imageUrl of images) {
     try {
@@ -217,7 +252,7 @@ async function postToFacebookPage({ message, ad, link }) {
       asDraft: true,
     });
     if (draft.ok && draft.data.id) {
-      return { type: 'draft', id: draft.data.id, photoCount: mediaIds.length };
+      return { type: 'draft', id: draft.data.id, photoCount: mediaIds.length, link };
     }
 
     const live = await postFeedWithMedia({
@@ -228,18 +263,8 @@ async function postToFacebookPage({ message, ad, link }) {
       asDraft: false,
     });
     if (live.ok && live.data.id) {
-      return { type: 'photos', id: live.data.id, photoCount: mediaIds.length };
+      return { type: 'photos', id: live.data.id, photoCount: mediaIds.length, link };
     }
-  }
-
-  const textDraft = await graphPostForm(`${pageId}/feed`, {
-    message,
-    published: 'false',
-    unpublished_content_type: 'DRAFT',
-    access_token: accessToken,
-  });
-  if (textDraft.ok && textDraft.data.id) {
-    return { type: 'draft', id: textDraft.data.id, photoCount: 0 };
   }
 
   if (images[0]) {
@@ -250,19 +275,15 @@ async function postToFacebookPage({ message, ad, link }) {
       access_token: accessToken,
     });
     if (photo.ok && (photo.data.id || photo.data.post_id)) {
-      return { type: 'photo', id: photo.data.post_id || photo.data.id };
+      return { type: 'photo', id: photo.data.post_id || photo.data.id, link };
     }
   }
 
-  const feed = await graphPostJson(`${pageId}/feed`, {
-    message,
-    link,
-    access_token: accessToken,
-  });
-  if (!feed.ok) {
-    throw new Error(feed.data?.error?.message || 'Facebook rejected this post.');
-  }
-  return { type: 'feed', id: feed.data.id };
+  throw new Error(
+    liveLink.data?.error?.message
+    || draftLink.data?.error?.message
+    || 'Facebook rejected this post.',
+  );
 }
 
 module.exports = async function handler(req, res) {
@@ -349,6 +370,7 @@ module.exports = async function handler(req, res) {
       facebookPostId: posted.id,
       type: posted.type,
       photoCount: posted.photoCount || 0,
+      link: posted.link || link,
     });
   } catch (err) {
     sendJson(res, 502, { message: err.message || 'Could not share this ad to Facebook.' });

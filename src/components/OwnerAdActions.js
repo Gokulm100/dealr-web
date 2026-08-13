@@ -32,7 +32,7 @@ export default function OwnerAdActions({ ad, onAdUpdated }) {
     setSharing(true);
     try {
       await shareAdToFacebook(ad.id, localStorage.getItem('authToken'));
-      showToast('Facebook draft with photos is ready to publish.', 'success');
+      showToast('Facebook draft includes a link to this listing.', 'success');
     } catch (err) {
       showToast(err.message || 'Could not share to Facebook.', 'error');
     } finally {
@@ -125,7 +125,7 @@ export default function OwnerAdActions({ ad, onAdUpdated }) {
               disabled={busy || sharing}
             >
               <FacebookMark />
-              {sharing ? 'Saving draft…' : 'Facebook draft'}
+              {sharing ? 'Sharing…' : 'Share link'}
             </button>
           )}
         </div>
