@@ -5,12 +5,12 @@ import { APP_DOWNLOAD_PATH } from '../content/siteInfo';
 
 const SLIDES = [
   {
-    id: 'ai-post',
-    image: '/banners/banner-ai-post.jpg',
-    kicker: 'Dealr AI',
-    title: 'Post an ad in seconds',
-    subtitle: 'Snap photos — AI writes the title and description.',
-    cta: 'Post an ad',
+    id: 'local',
+    image: '/banners/banner-local.jpg',
+    kicker: 'Neighbourhood first',
+    title: 'Deal with people nearby',
+    subtitle: 'Deal with the right people with the power of AI assisted ad posting.',
+    cta: 'Post ad',
     page: 'post',
     tone: 'sky',
   },
@@ -32,16 +32,6 @@ const SLIDES = [
     subtitle: 'No posting fees. No hidden charges.',
     cta: 'Start listing',
     page: 'post',
-    tone: 'sky',
-  },
-  {
-    id: 'local',
-    image: '/banners/banner-local.jpg',
-    kicker: 'Neighbourhood first',
-    title: 'Deal with people nearby',
-    subtitle: 'Chat in-app, meet locally, buy with confidence.',
-    cta: 'Open chat',
-    page: 'messages',
     tone: 'sky',
   },
   {
