@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import { Activity } from 'lucide-react';
 import AdCard from '../components/AdCard';
+import FeatureBannerCarousel from '../components/FeatureBannerCarousel';
 import FilterBar from '../components/FilterBar';
 import { SkeletonAdCard } from '../components/Skeleton';
 import { useApp } from '../context/AppContext';
@@ -38,6 +39,7 @@ export default function HomePage() {
 
   return (
     <div>
+      <FeatureBannerCarousel />
       <FilterBar />
 
       <div className="ads-grid">
