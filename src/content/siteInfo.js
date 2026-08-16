@@ -11,6 +11,13 @@ export const APP_DOWNLOAD_PATH = '/app';
 export const ANDROID_APK_URL =
   process.env.REACT_APP_ANDROID_APK_URL || '/downloads/dealr.apk';
 
+export const SITE_ORIGIN = 'https://dealrapp.in';
+
+/** Absolute APK URL encoded in the home-carousel QR. */
+export const ANDROID_APK_PUBLIC_URL = /^https?:\/\//i.test(ANDROID_APK_URL)
+  ? ANDROID_APK_URL
+  : `${SITE_ORIGIN}${ANDROID_APK_URL}`;
+
 /** Shown until Play listing is live — then point CTAs at the Play URL instead. */
 export const PLAY_STORE_STATUS = 'coming_soon';
 export const PLAY_STORE_URL = process.env.REACT_APP_PLAY_STORE_URL || '';

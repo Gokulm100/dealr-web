@@ -49,6 +49,10 @@ const SLIDES = [
     subtitle: 'Faster posting and chat. Play Store coming soon.',
     cta: 'Download',
     href: APP_DOWNLOAD_PATH,
+    qr: {
+      src: '/banners/apk-download-qr.png',
+      label: 'Scan to install',
+    },
   },
 ];
 
@@ -169,7 +173,7 @@ export default function FeatureBannerCarousel() {
               href={isLink ? slide.href : undefined}
               type={isLink ? undefined : 'button'}
               onClick={(event) => handleNavigate(event, slide)}
-              aria-label={`${slide.title}. ${slide.subtitle}`}
+              aria-label={`${slide.title}. ${slide.subtitle}${slide.qr ? ' Scan the QR code to download the Android app.' : ''}`}
             >
               <img
                 className="feature-banner-image"
@@ -187,6 +191,12 @@ export default function FeatureBannerCarousel() {
                   <ChevronRight size={12} strokeWidth={2.5} aria-hidden />
                 </span>
               </span>
+              {slide.qr ? (
+                <span className="feature-banner-qr">
+                  <img src={slide.qr.src} alt="" draggable="false" />
+                  <span className="feature-banner-qr-label">{slide.qr.label}</span>
+                </span>
+              ) : null}
             </SlideTag>
           );
         })}
