@@ -643,6 +643,32 @@ button, input, textarea, select {
   line-height: 1.45;
   max-width: 34ch;
 }
+.feature-banner-slide.is-light {
+  background: #b7e4c7;
+}
+.feature-banner-slide.is-light .feature-banner-scrim {
+  background: linear-gradient(90deg, rgba(232, 248, 238, 0.55) 0%, rgba(183, 228, 199, 0.18) 70%, transparent 100%);
+}
+.feature-banner-slide.is-light .feature-banner-kicker {
+  color: #1b7a4a;
+}
+.feature-banner-slide.is-light .feature-banner-title {
+  color: #14532d;
+  text-shadow: none;
+}
+.feature-banner-slide.is-light .feature-banner-subtitle {
+  color: #3f6f54;
+}
+.feature-banner-slide.is-light .feature-banner-cta {
+  background: rgba(20, 83, 45, 0.9);
+  border-color: transparent;
+  color: #fff;
+}
+.feature-banner-slide.is-light:hover .feature-banner-cta,
+.feature-banner-slide.is-light:focus-visible .feature-banner-cta {
+  background: #14532d;
+}
+
 .feature-banner-cta {
   margin-top: 16px;
   align-self: flex-start;

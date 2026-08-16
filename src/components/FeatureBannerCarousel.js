@@ -12,6 +12,7 @@ const SLIDES = [
     subtitle: 'Snap photos — AI writes the title and description.',
     cta: 'Post an ad',
     page: 'post',
+    tone: 'light',
   },
   {
     id: 'ai-analytics',
@@ -164,7 +165,7 @@ export default function FeatureBannerCarousel() {
           return (
             <SlideTag
               key={slide.id}
-              className="feature-banner-slide"
+              className={`feature-banner-slide${slide.tone === 'light' ? ' is-light' : ''}`}
               href={isLink ? slide.href : undefined}
               type={isLink ? undefined : 'button'}
               onClick={(event) => handleNavigate(event, slide)}
