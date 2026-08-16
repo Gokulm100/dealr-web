@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { APP_DOWNLOAD_PATH } from '../content/siteInfo';
 
 const SLIDES = [
   {
@@ -38,6 +39,15 @@ const SLIDES = [
     subtitle: 'Chat in-app, meet locally, buy with confidence.',
     cta: 'Open chat',
     page: 'messages',
+  },
+  {
+    id: 'android-app',
+    image: '/banners/banner-android.jpg',
+    kicker: 'Android app',
+    title: 'Get Dealr on your phone',
+    subtitle: 'Faster posting and chat. Play Store coming soon.',
+    cta: 'Download',
+    href: APP_DOWNLOAD_PATH,
   },
 ];
 
@@ -113,7 +123,9 @@ export default function FeatureBannerCarousel() {
     }
   };
 
-  const handleNavigate = (slide) => {
+  const handleNavigate = (event, slide) => {
+    if (slide.href) return;
+    event.preventDefault();
     if ((slide.page === 'post' || slide.page === 'messages') && user?.isBlocked) {
       showToast(
         slide.page === 'post'
@@ -146,32 +158,37 @@ export default function FeatureBannerCarousel() {
         onPointerDown={pause}
         onPointerUp={resume}
       >
-        {SLIDES.map((slide) => (
-          <button
-            key={slide.id}
-            type="button"
-            className="feature-banner-slide"
-            onClick={() => handleNavigate(slide)}
-            aria-label={`${slide.title}. ${slide.subtitle}`}
-          >
-            <img
-              className="feature-banner-image"
-              src={slide.image}
-              alt=""
-              draggable="false"
-            />
-            <span className="feature-banner-scrim" aria-hidden="true" />
-            <span className="feature-banner-copy">
-              <span className="feature-banner-kicker">{slide.kicker}</span>
-              <span className="feature-banner-title">{slide.title}</span>
-              <span className="feature-banner-subtitle">{slide.subtitle}</span>
-              <span className="feature-banner-cta">
-                {slide.cta}
-                <ChevronRight size={12} strokeWidth={2.5} aria-hidden />
+        {SLIDES.map((slide) => {
+          const isLink = Boolean(slide.href);
+          const SlideTag = isLink ? 'a' : 'button';
+          return (
+            <SlideTag
+              key={slide.id}
+              className="feature-banner-slide"
+              href={isLink ? slide.href : undefined}
+              type={isLink ? undefined : 'button'}
+              onClick={(event) => handleNavigate(event, slide)}
+              aria-label={`${slide.title}. ${slide.subtitle}`}
+            >
+              <img
+                className="feature-banner-image"
+                src={slide.image}
+                alt=""
+                draggable="false"
+              />
+              <span className="feature-banner-scrim" aria-hidden="true" />
+              <span className="feature-banner-copy">
+                <span className="feature-banner-kicker">{slide.kicker}</span>
+                <span className="feature-banner-title">{slide.title}</span>
+                <span className="feature-banner-subtitle">{slide.subtitle}</span>
+                <span className="feature-banner-cta">
+                  {slide.cta}
+                  <ChevronRight size={12} strokeWidth={2.5} aria-hidden />
+                </span>
               </span>
-            </span>
-          </button>
-        ))}
+            </SlideTag>
+          );
+        })}
       </div>
 
       <button
