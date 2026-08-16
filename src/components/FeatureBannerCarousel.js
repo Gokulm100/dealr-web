@@ -12,7 +12,7 @@ const SLIDES = [
     subtitle: 'Snap photos — AI writes the title and description.',
     cta: 'Post an ad',
     page: 'post',
-    tone: 'light',
+    tone: 'mint',
   },
   {
     id: 'ai-analytics',
@@ -49,6 +49,7 @@ const SLIDES = [
     subtitle: 'Faster posting and chat. Play Store coming soon.',
     cta: 'Download',
     href: APP_DOWNLOAD_PATH,
+    tone: 'warm',
     qr: {
       src: '/banners/apk-download-qr.png',
       label: 'Scan to install',
@@ -169,7 +170,7 @@ export default function FeatureBannerCarousel() {
           return (
             <SlideTag
               key={slide.id}
-              className={`feature-banner-slide${slide.tone === 'light' ? ' is-light' : ''}`}
+              className={`feature-banner-slide${slide.tone ? ` is-${slide.tone}` : ''}`}
               href={isLink ? slide.href : undefined}
               type={isLink ? undefined : 'button'}
               onClick={(event) => handleNavigate(event, slide)}

@@ -643,30 +643,55 @@ button, input, textarea, select {
   line-height: 1.45;
   max-width: 34ch;
 }
-.feature-banner-slide.is-light {
+.feature-banner-slide.is-mint {
   background: #b7e4c7;
 }
-.feature-banner-slide.is-light .feature-banner-scrim {
+.feature-banner-slide.is-mint .feature-banner-scrim {
   background: linear-gradient(90deg, rgba(232, 248, 238, 0.55) 0%, rgba(183, 228, 199, 0.18) 70%, transparent 100%);
 }
-.feature-banner-slide.is-light .feature-banner-kicker {
+.feature-banner-slide.is-mint .feature-banner-kicker {
   color: #1b7a4a;
 }
-.feature-banner-slide.is-light .feature-banner-title {
+.feature-banner-slide.is-mint .feature-banner-title {
   color: #14532d;
   text-shadow: none;
 }
-.feature-banner-slide.is-light .feature-banner-subtitle {
+.feature-banner-slide.is-mint .feature-banner-subtitle {
   color: #3f6f54;
 }
-.feature-banner-slide.is-light .feature-banner-cta {
+.feature-banner-slide.is-mint .feature-banner-cta {
   background: rgba(20, 83, 45, 0.9);
   border-color: transparent;
   color: #fff;
 }
-.feature-banner-slide.is-light:hover .feature-banner-cta,
-.feature-banner-slide.is-light:focus-visible .feature-banner-cta {
+.feature-banner-slide.is-mint:hover .feature-banner-cta,
+.feature-banner-slide.is-mint:focus-visible .feature-banner-cta {
   background: #14532d;
+}
+.feature-banner-slide.is-warm {
+  background: #fde2c8;
+}
+.feature-banner-slide.is-warm .feature-banner-scrim {
+  background: linear-gradient(90deg, rgba(255, 244, 232, 0.58) 0%, rgba(253, 226, 200, 0.2) 70%, transparent 100%);
+}
+.feature-banner-slide.is-warm .feature-banner-kicker {
+  color: #c2410c;
+}
+.feature-banner-slide.is-warm .feature-banner-title {
+  color: #7c2d12;
+  text-shadow: none;
+}
+.feature-banner-slide.is-warm .feature-banner-subtitle {
+  color: #9a6240;
+}
+.feature-banner-slide.is-warm .feature-banner-cta {
+  background: #9a3412;
+  border-color: transparent;
+  color: #fff;
+}
+.feature-banner-slide.is-warm:hover .feature-banner-cta,
+.feature-banner-slide.is-warm:focus-visible .feature-banner-cta {
+  background: #7c2d12;
 }
 
 .feature-banner-cta {
