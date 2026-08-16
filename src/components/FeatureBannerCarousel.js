@@ -12,7 +12,7 @@ const SLIDES = [
     subtitle: 'Snap photos — AI writes the title and description.',
     cta: 'Post an ad',
     page: 'post',
-    tone: 'mint',
+    tone: 'sky',
   },
   {
     id: 'ai-analytics',
@@ -22,6 +22,7 @@ const SLIDES = [
     subtitle: 'Views, interest, and pricing insights on every listing.',
     cta: 'My ads',
     page: 'my-ads',
+    tone: 'sky',
   },
   {
     id: 'free',
@@ -31,6 +32,7 @@ const SLIDES = [
     subtitle: 'No posting fees. No hidden charges.',
     cta: 'Start listing',
     page: 'post',
+    tone: 'sky',
   },
   {
     id: 'local',
@@ -40,6 +42,7 @@ const SLIDES = [
     subtitle: 'Chat in-app, meet locally, buy with confidence.',
     cta: 'Open chat',
     page: 'messages',
+    tone: 'sky',
   },
   {
     id: 'android-app',
@@ -49,7 +52,7 @@ const SLIDES = [
     subtitle: 'Faster posting and chat. Play Store coming soon.',
     cta: 'Download',
     href: APP_DOWNLOAD_PATH,
-    tone: 'warm',
+    tone: 'sky',
     qr: {
       src: '/banners/apk-download-qr.png',
       label: 'Scan to install',
