@@ -22,6 +22,7 @@ import OwnerAdActions from '../components/OwnerAdActions';
 import SeededBadge, { SeededNotice } from '../components/SeededBadge';
 import { getAdIdFromLocation } from '../utils/facebookShare';
 import { shareListing } from '../utils/shareListing';
+import { getVisitorId, trackAdView, trackChat } from '../utils/siteAnalytics';
 
 const FALLBACK = 'https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg';
 
@@ -227,6 +228,7 @@ function DetailChatBox({ listing, user, apiFetch, showToast, navigate }) {
         method: 'POST',
         body: JSON.stringify({ adId: listing.id, from: user._id, to: listing.sellerId, message: msg }),
       });
+      trackChat({ id: listing.id, title: listing.title });
       await fetchMsgs(true);
     } catch {
       setMessages(prev => removeOptimistic(prev, optId));
@@ -373,7 +375,7 @@ function DetailChatBox({ listing, user, apiFetch, showToast, navigate }) {
 }
 
 export default function AdDetailPage() {
-  const { pageExtra, navigate, user, apiFetch, showToast } = useApp();
+  const { pageExtra, navigate, user, apiFetch, showToast, API } = useApp();
   const listingFromNav = pageExtra.listing;
   const returnTo = pageExtra.returnTo || 'home';
   const adReturnTo = pageExtra.adReturnTo || returnTo;
@@ -389,6 +391,24 @@ export default function AdDetailPage() {
     setListingError('');
     if (listingFromNav) setListingLoading(false);
   }, [listingFromNav]);
+
+  useEffect(() => {
+    if (!listing?.id) return undefined;
+    const isOwner = user?._id && (String(user._id) === String(listing.sellerId));
+    if (isOwner) return undefined;
+    trackAdView(listing);
+    const token = localStorage.getItem('authToken');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token && token !== 'null') headers.Authorization = `Bearer ${token}`;
+    fetch(`${API}/api/ads/incrementViews`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ adId: listing.id, visitorId: getVisitorId() }),
+    }).catch(() => {});
+    return undefined;
+    // listing fields are read after the id guard
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listing?.id, listing?.sellerId, user?._id, API]);
 
   useEffect(() => {
     if (listingFromNav) return undefined;

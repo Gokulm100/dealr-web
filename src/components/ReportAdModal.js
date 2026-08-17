@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Flag, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { trackReport } from '../utils/siteAnalytics';
 
 export default function ReportAdModal({ adId, onClose }) {
   const { apiFetch, showToast } = useApp();
@@ -37,6 +38,7 @@ export default function ReportAdModal({ adId, onClose }) {
         method: 'POST',
         body: JSON.stringify({ adId, reasonId: selected }),
       });
+      trackReport({ id: adId });
       showToast('Report submitted. We will review this ad.', 'success');
       onClose();
     } catch (err) {

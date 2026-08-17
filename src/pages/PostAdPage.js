@@ -4,6 +4,7 @@ import { useApp } from '../context/AppContext';
 import AiTextArea from '../components/aiTextArea';
 import { GeminiAnalyticsDefs, GeminiSparkles } from '../components/geminiBrand';
 import { extractCreatedAdId, getFacebookShareStatus, shareAdToFacebook } from '../utils/facebookShare';
+import { trackPostAd } from '../utils/siteAnalytics';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'https://e4u-backend.onrender.com';
 
@@ -471,6 +472,7 @@ export default function PostAdPage() {
       const body = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(body.message || 'Failed');
       const createdAdId = extractCreatedAdId(body);
+      trackPostAd({ id: createdAdId || editingAd?.id, title }, { edited: !!editingAd });
 
       if (!editingAd && shareToFacebook && facebookConfigured && createdAdId) {
         try {

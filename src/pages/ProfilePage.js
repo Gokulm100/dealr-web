@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import ReviewModal from '../components/ReviewModal';
+import { trackLogin, trackLogout, flushAnalytics } from '../utils/siteAnalytics';
 
 const API = 'https://e4u-backend.onrender.com';
 const GOOGLE_CLIENT_ID = '281405583072-n7rkibd2qc0afs76dve0kgbsi9p15jfk.apps.googleusercontent.com';
@@ -123,6 +124,7 @@ export default function ProfilePage() {
         const userHasConsented = !!(usr.hasConsented || usr.isConsented || usr.consentAccepted);
         const normalizedUser = { ...usr, hasConsented: userHasConsented };
         login(token, normalizedUser);
+        trackLogin();
         showToast('Signed in successfully!', 'success');
         if (!userHasConsented) navigate('consent');
       } else {
@@ -139,6 +141,8 @@ export default function ProfilePage() {
       'Are you sure you want to logout?',
       <LogOut size={22} color="var(--error)" strokeWidth={2} />,
       () => {
+      trackLogout();
+      flushAnalytics();
       logout();
       navigate('home');
       showToast('Logged out.', 'success');

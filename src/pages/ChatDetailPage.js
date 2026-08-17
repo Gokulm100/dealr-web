@@ -16,6 +16,7 @@ import ChatTrustCaution from '../components/ChatTrustCaution';
 import { getChatTrustCautionFromProfile } from '../utils/chatTrustCaution';
 import { emitJoin } from '../utils/socket';
 import { SkeletonConversation } from '../components/Skeleton';
+import { trackChat } from '../utils/siteAnalytics';
 
 function FraudBanner({ fraud, onClose, onReportUser }) {
   if (!fraud?.fraudIndicators?.length) return null;
@@ -160,6 +161,7 @@ export default function ChatDetailPage() {
           message: msg,
         }),
       });
+      trackChat({ id: adId, title: adTitle });
       fetchMsgs(true);
     } catch {
       setMessages(prev => removeOptimistic(prev, optId));

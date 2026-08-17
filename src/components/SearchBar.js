@@ -15,6 +15,7 @@ import {
   loadRecentSearches,
   saveRecentSearch,
 } from '../utils/searchSuggestions';
+import { trackSearch } from '../utils/siteAnalytics';
 
 const DEBOUNCE_MS = 320;
 
@@ -97,7 +98,10 @@ export default function SearchBar() {
     setSearchQuery(next);
     setPage(1);
     goHomeIfNeeded();
-    if (persistRecent && next) setRecent(saveRecentSearch(next));
+    if (persistRecent && next) {
+      setRecent(saveRecentSearch(next));
+      trackSearch(next);
+    }
     setOpen(false);
   };
 
@@ -164,6 +168,7 @@ export default function SearchBar() {
     debounceRef.current = setTimeout(() => {
       setSearchQuery(trimmed);
       setPage(1);
+      if (trimmed.length >= 2) trackSearch(trimmed);
       if (trimmed.length >= 2 && currentPage !== 'home') navigate('home');
     }, DEBOUNCE_MS);
 

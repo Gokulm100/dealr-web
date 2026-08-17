@@ -10,6 +10,8 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
+  LayoutGrid,
+  List,
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import {
@@ -18,16 +20,12 @@ import {
   setUserActive,
   updateReportStatus,
 } from '../services/adminApi';
+import AdminDashboard from '../components/admin/AdminDashboard';
+import AdminActivityLog from '../components/admin/AdminActivityLog';
+import AdminAvatar from '../components/admin/AdminAvatar';
 
 function UserAvatar({ user }) {
-  if (user.profilePic) {
-    return <img className="admin-avatar" src={user.profilePic} alt="" />;
-  }
-  return (
-    <div className="admin-avatar admin-avatar-fallback">
-      {user.name?.charAt(0)?.toUpperCase() || '?'}
-    </div>
-  );
+  return <AdminAvatar user={user} />;
 }
 
 function formatDate(value) {
@@ -39,7 +37,7 @@ function formatDate(value) {
 
 export default function AdminPage() {
   const { user, apiFetch, navigate, showToast, showModal } = useApp();
-  const [tab, setTab] = useState('users');
+  const [tab, setTab] = useState('dashboard');
   const [users, setUsers] = useState([]);
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -48,8 +46,14 @@ export default function AdminPage() {
   const [userSearch, setUserSearch] = useState('');
   const [userFilter, setUserFilter] = useState('all');
   const [reportFilter, setReportFilter] = useState('pending');
+  const [insightRefresh, setInsightRefresh] = useState(0);
 
   const isAdmin = !!(user?.isAdmin);
+
+  const changeTab = (next) => {
+    setApiError('');
+    setTab(next);
+  };
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -81,7 +85,11 @@ export default function AdminPage() {
 
   const refresh = useCallback(() => {
     if (tab === 'users') loadUsers();
-    else loadReports();
+    else if (tab === 'reports') loadReports();
+    else {
+      setApiError('');
+      setInsightRefresh(n => n + 1);
+    }
   }, [tab, loadUsers, loadReports]);
 
   useEffect(() => {
@@ -98,8 +106,18 @@ export default function AdminPage() {
   useEffect(() => {
     if (!isAdmin) return;
     if (tab === 'users') loadUsers();
-    else loadReports();
+    else if (tab === 'reports') loadReports();
+    else setLoading(false);
   }, [tab, isAdmin, loadUsers, loadReports]);
+
+  useEffect(() => {
+    if (!isAdmin) return undefined;
+    let cancelled = false;
+    fetchAdminUsers(apiFetch)
+      .then((data) => { if (!cancelled) setUsers(data); })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, [isAdmin, apiFetch]);
 
   const filteredUsers = useMemo(() => {
     let list = users;
@@ -203,7 +221,7 @@ export default function AdminPage() {
         <div>
           <h1 className="messages-page-title">Admin panel</h1>
           <p className="messages-page-subtitle">
-            Manage users, activation status, and user reports.
+            Dashboard, visitors, activity, users, and reports.
           </p>
         </div>
         <button type="button" className="admin-refresh-btn" onClick={refresh} disabled={loading} aria-label="Refresh">
@@ -214,8 +232,15 @@ export default function AdminPage() {
       <div className="admin-tabs">
         <button
           type="button"
+          className={`admin-tab${tab === 'dashboard' ? ' active' : ''}`}
+          onClick={() => changeTab('dashboard')}
+        >
+          <LayoutGrid size={16} /> Dashboard
+        </button>
+        <button
+          type="button"
           className={`admin-tab${tab === 'users' ? ' active' : ''}`}
-          onClick={() => setTab('users')}
+          onClick={() => changeTab('users')}
         >
           <Users size={16} /> Users
           <span className="admin-tab-count">{users.length}</span>
@@ -223,12 +248,19 @@ export default function AdminPage() {
         <button
           type="button"
           className={`admin-tab${tab === 'reports' ? ' active' : ''}`}
-          onClick={() => setTab('reports')}
+          onClick={() => changeTab('reports')}
         >
           <Flag size={16} /> Reports
           {pendingReportCount > 0 && (
             <span className="admin-tab-badge">{pendingReportCount}</span>
           )}
+        </button>
+        <button
+          type="button"
+          className={`admin-tab${tab === 'activity' ? ' active' : ''}`}
+          onClick={() => changeTab('activity')}
+        >
+          <List size={16} /> Activity
         </button>
       </div>
 
@@ -239,10 +271,26 @@ export default function AdminPage() {
             <strong>Could not reach admin API</strong>
             <p>{apiError}</p>
             <p className="admin-api-hint">
-              Ensure the backend exposes POST routes: /api/admin/getUsers, setUserActive, getReports, updateReport.
+              Ensure the backend exposes POST routes: /api/admin/getUsers, setUserActive, getReports, updateReport, getAdViewers, getVisitors, getActivityLog, and POST /api/analytics/track.
             </p>
           </div>
         </div>
+      )}
+
+      {tab === 'dashboard' && (
+        <AdminDashboard
+          apiFetch={apiFetch}
+          refreshKey={insightRefresh}
+          onError={setApiError}
+        />
+      )}
+
+      {tab === 'activity' && (
+        <AdminActivityLog
+          apiFetch={apiFetch}
+          refreshKey={insightRefresh}
+          onError={setApiError}
+        />
       )}
 
       {tab === 'users' && (

@@ -5340,7 +5340,7 @@ button, input, textarea, select {
 @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ── ADMIN ── */
-.admin-page { max-width: 1100px; }
+.admin-page { max-width: 1180px; }
 .admin-page-header {
   display: flex;
   align-items: flex-start;
@@ -5378,6 +5378,7 @@ button, input, textarea, select {
 @keyframes admin-spin { to { transform: rotate(360deg); } }
 .admin-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 16px;
 }
@@ -5632,6 +5633,219 @@ button, input, textarea, select {
   border-top: 1px solid #e8eef5;
 }
 
+.admin-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.admin-stat {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--white);
+  border: 1px solid #e8eef5;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.admin-stat-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.admin-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.1;
+}
+.admin-stat-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  gap: 16px;
+  align-items: start;
+}
+.admin-widget-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.admin-widget-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+  margin: 0 0 4px;
+}
+.admin-widget-sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+  max-width: 420px;
+}
+.admin-ad-view-list,
+.admin-visitor-list,
+.admin-viewer-list,
+.admin-log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.admin-ad-view-item {
+  border-bottom: 1px solid #f1f5f9;
+}
+.admin-ad-view-item:last-child { border-bottom: none; }
+.admin-ad-view-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+}
+.admin-ad-view-toggle:hover { background: #fafbfc; }
+.admin-ad-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #e2e8f0;
+}
+.admin-ad-thumb-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.admin-ad-view-copy { flex: 1; min-width: 0; }
+.admin-ad-view-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.admin-ad-chevron {
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+.admin-ad-view-item.is-open .admin-ad-chevron { transform: rotate(180deg); }
+.admin-viewer-list {
+  padding: 0 16px 12px 72px;
+}
+.admin-viewer-row,
+.admin-visitor-row,
+.admin-log-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+}
+.admin-visitor-row,
+.admin-log-row {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.admin-visitor-row:last-child,
+.admin-log-row:last-child { border-bottom: none; }
+.admin-viewer-copy { flex: 1; min-width: 0; }
+.admin-viewer-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.admin-visitor-tag {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  background: #f1f5f9;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.admin-avatar-fallback.is-visitor {
+  background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+  color: #475569;
+}
+.admin-empty-compact { padding: 8px 16px 16px 72px; text-align: left; }
+.admin-log-toolbar { align-items: flex-start; }
+.admin-log-type {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #eff6ff;
+  color: var(--primary);
+}
+.admin-log-type.is-visit,
+.admin-log-type.is-page_view { background: #ecfeff; color: #0e7490; }
+.admin-log-type.is-ad_view { background: #eff6ff; color: var(--primary); }
+.admin-log-type.is-login { background: #f0fdf4; color: #15803d; }
+.admin-log-type.is-logout { background: #f8fafc; color: #64748b; }
+.admin-log-type.is-post_ad,
+.admin-log-type.is-edit_ad { background: #fff7ed; color: #c2410c; }
+.admin-log-type.is-search { background: #f5f3ff; color: #6d28d9; }
+.admin-log-type.is-chat { background: #f0fdf4; color: #047857; }
+.admin-log-type.is-report { background: #fef2f2; color: #b91c1c; }
+.admin-log-copy { flex: 1; min-width: 0; }
+.admin-log-message {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+}
+.admin-log-time {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.admin-log-more {
+  display: flex;
+  justify-content: center;
+  padding: 12px 16px 16px;
+}
+
+@media (max-width: 900px) {
+  .admin-stats-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-dashboard-grid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 768px) {
   .admin-page-header { flex-wrap: wrap; }
   .admin-table th:nth-child(3),
@@ -5640,6 +5854,9 @@ button, input, textarea, select {
   .admin-table td:nth-child(4) { display: none; }
   .admin-row-actions { flex-direction: column; align-items: stretch; }
   .admin-btn { justify-content: center; }
+  .admin-viewer-list { padding-left: 16px; }
+  .admin-log-time { display: none; }
+  .admin-widget-head .admin-search { width: 100%; }
 }
 
 /* ── MOBILE NAV ── */

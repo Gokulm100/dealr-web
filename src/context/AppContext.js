@@ -5,6 +5,7 @@ import { parseChatPayload } from '../utils/chatSocket';
 import { formatLocationName, toApiLocationFilter } from '../utils/locationFilter';
 import { isSeededDescription, stripSeededMarker } from '../utils/seededListing';
 import { getAdIdFromLocation } from '../utils/facebookShare';
+import { initSiteAnalytics, trackPageView } from '../utils/siteAnalytics';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'https://e4u-backend.onrender.com';
 const LIMIT = 10;
@@ -264,6 +265,21 @@ export function AppProvider({ children }) {
     fetchCategories();
     fetchLocations();
   }, [fetchCategories, fetchLocations]);
+
+  useEffect(() => {
+    initSiteAnalytics(API);
+  }, []);
+
+  useEffect(() => {
+    const extra = {};
+    if (pageExtra?.listing?.id) {
+      extra.adId = pageExtra.listing.id;
+      extra.adTitle = pageExtra.listing.title;
+    }
+    trackPageView(currentPage, extra);
+    // pageExtra is sampled when the page changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
 
   useEffect(() => {
     setPage(1);
