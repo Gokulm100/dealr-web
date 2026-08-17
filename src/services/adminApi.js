@@ -1,4 +1,4 @@
-import { parseAdminPage } from '../utils/adminPaging';
+import { ADMIN_ACTIVITY_LIMIT, ADMIN_LIST_LIMIT, parseAdminPage } from '../utils/adminPaging';
 
 /**
  * Admin API — expects backend routes under /api/admin (admin JWT required)
@@ -50,7 +50,7 @@ export function mapAdminReport(raw) {
   };
 }
 
-export async function fetchAdminUsers(apiFetch, { page = 1, limit = 20 } = {}) {
+export async function fetchAdminUsers(apiFetch, { page = 1, limit = ADMIN_LIST_LIMIT } = {}) {
   const res = await apiFetch(`${ADMIN}/getUsers`, {
     method: 'POST',
     body: JSON.stringify({ page, limit }),
@@ -66,7 +66,7 @@ export async function setUserActive(apiFetch, userId, isActive) {
   });
 }
 
-export async function fetchAdminReports(apiFetch, { status = 'pending', page = 1, limit = 20 } = {}) {
+export async function fetchAdminReports(apiFetch, { status = 'pending', page = 1, limit = ADMIN_LIST_LIMIT } = {}) {
   const res = await apiFetch(`${ADMIN}/getReports`, {
     method: 'POST',
     body: JSON.stringify({
@@ -88,7 +88,7 @@ export async function updateReportStatus(apiFetch, reportId, status, adminNote =
 
 export async function fetchPendingReportCount(apiFetch) {
   try {
-    const res = await fetchAdminReports(apiFetch, { status: 'pending', page: 1, limit: 20 });
+    const res = await fetchAdminReports(apiFetch, { status: 'pending', page: 1, limit: ADMIN_LIST_LIMIT });
     return res.total;
   } catch {
     return 0;
@@ -176,7 +176,7 @@ export function mapActivityLog(raw = {}) {
   };
 }
 
-export async function fetchAdminAdViewers(apiFetch, { page = 1, limit = 20 } = {}) {
+export async function fetchAdminAdViewers(apiFetch, { page = 1, limit = ADMIN_LIST_LIMIT } = {}) {
   const res = await apiFetch(`${ADMIN}/getAdViewers`, {
     method: 'POST',
     body: JSON.stringify({ page, limit }),
@@ -194,7 +194,7 @@ export async function fetchAdminAdViewers(apiFetch, { page = 1, limit = 20 } = {
   };
 }
 
-export async function fetchAdminVisitors(apiFetch, { page = 1, limit = 20 } = {}) {
+export async function fetchAdminVisitors(apiFetch, { page = 1, limit = ADMIN_LIST_LIMIT } = {}) {
   const res = await apiFetch(`${ADMIN}/getVisitors`, {
     method: 'POST',
     body: JSON.stringify({ page, limit }),
@@ -212,7 +212,7 @@ export async function fetchAdminVisitors(apiFetch, { page = 1, limit = 20 } = {}
   };
 }
 
-export async function fetchAdminActivityLog(apiFetch, { page = 1, limit = 40, type } = {}) {
+export async function fetchAdminActivityLog(apiFetch, { page = 1, limit = ADMIN_ACTIVITY_LIMIT, type } = {}) {
   const res = await apiFetch(`${ADMIN}/getActivityLog`, {
     method: 'POST',
     body: JSON.stringify({ page, limit, type: type && type !== 'all' ? type : undefined }),

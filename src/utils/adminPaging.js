@@ -1,5 +1,5 @@
-export const ADMIN_LIST_LIMIT = 20;
-export const ADMIN_ACTIVITY_LIMIT = 40;
+export const ADMIN_LIST_LIMIT = 10;
+export const ADMIN_ACTIVITY_LIMIT = 10;
 
 export function parseAdminPage(res = {}, { page = 1, limit = ADMIN_LIST_LIMIT, itemCount = 0 } = {}) {
   const parsedLimit = Math.max(1, Math.min(100, Number(res.limit) || limit || ADMIN_LIST_LIMIT));
