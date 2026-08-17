@@ -1,8 +1,11 @@
+import { parseAdminPage } from '../utils/adminPaging';
+
 /**
  * Admin API — expects backend routes under /api/admin (admin JWT required)
  * and public POST /api/analytics/track for visitor/activity events.
  * Adjust paths here if your backend uses different names.
  */
+
 const ADMIN = '/api/admin';
 
 function normalizeList(res, keys = ['data', 'users', 'reports', 'items', 'results']) {
@@ -47,9 +50,13 @@ export function mapAdminReport(raw) {
   };
 }
 
-export async function fetchAdminUsers(apiFetch) {
-  const res = await apiFetch(`${ADMIN}/getUsers`, { method: 'POST', body: JSON.stringify({}) });
-  return normalizeList(res, ['data', 'users']).map(mapAdminUser);
+export async function fetchAdminUsers(apiFetch, { page = 1, limit = 20 } = {}) {
+  const res = await apiFetch(`${ADMIN}/getUsers`, {
+    method: 'POST',
+    body: JSON.stringify({ page, limit }),
+  });
+  const users = normalizeList(res, ['data', 'users']).map(mapAdminUser);
+  return { users, ...parseAdminPage(res, { page, limit, itemCount: users.length }) };
 }
 
 export async function setUserActive(apiFetch, userId, isActive) {
@@ -59,12 +66,17 @@ export async function setUserActive(apiFetch, userId, isActive) {
   });
 }
 
-export async function fetchAdminReports(apiFetch, status = 'pending') {
+export async function fetchAdminReports(apiFetch, { status = 'pending', page = 1, limit = 20 } = {}) {
   const res = await apiFetch(`${ADMIN}/getReports`, {
     method: 'POST',
-    body: JSON.stringify({ status: status === 'all' ? undefined : status }),
+    body: JSON.stringify({
+      status: status === 'all' ? undefined : status,
+      page,
+      limit,
+    }),
   });
-  return normalizeList(res, ['data', 'reports']).map(mapAdminReport);
+  const reports = normalizeList(res, ['data', 'reports']).map(mapAdminReport);
+  return { reports, ...parseAdminPage(res, { page, limit, itemCount: reports.length }) };
 }
 
 export async function updateReportStatus(apiFetch, reportId, status, adminNote = '') {
@@ -76,8 +88,8 @@ export async function updateReportStatus(apiFetch, reportId, status, adminNote =
 
 export async function fetchPendingReportCount(apiFetch) {
   try {
-    const reports = await fetchAdminReports(apiFetch, 'pending');
-    return reports.filter(r => r.status === 'pending').length;
+    const res = await fetchAdminReports(apiFetch, { status: 'pending', page: 1, limit: 20 });
+    return res.total;
   } catch {
     return 0;
   }
@@ -164,32 +176,39 @@ export function mapActivityLog(raw = {}) {
   };
 }
 
-export async function fetchAdminAdViewers(apiFetch) {
-  const res = await apiFetch(`${ADMIN}/getAdViewers`, { method: 'POST', body: JSON.stringify({}) });
+export async function fetchAdminAdViewers(apiFetch, { page = 1, limit = 20 } = {}) {
+  const res = await apiFetch(`${ADMIN}/getAdViewers`, {
+    method: 'POST',
+    body: JSON.stringify({ page, limit }),
+  });
   const ads = normalizeList(res, ['ads', 'listings', 'data', 'items', 'results']).map(mapAdViewers);
   const stats = res?.stats || res?.summary || {};
   return {
     ads,
     stats: {
-      totalViews: Number(stats.totalViews ?? ads.reduce((n, a) => n + a.views, 0)) || 0,
-      uniqueViewers: Number(stats.uniqueViewers ?? ads.reduce((n, a) => n + a.uniqueViewers, 0)) || 0,
-      adsViewed: Number(stats.adsViewed ?? ads.length) || ads.length,
+      totalViews: Number(stats.totalViews) || 0,
+      uniqueViewers: Number(stats.uniqueViewers) || 0,
+      adsViewed: Number(stats.adsViewed) || 0,
     },
+    ...parseAdminPage(res, { page, limit, itemCount: ads.length }),
   };
 }
 
-export async function fetchAdminVisitors(apiFetch) {
-  const res = await apiFetch(`${ADMIN}/getVisitors`, { method: 'POST', body: JSON.stringify({}) });
+export async function fetchAdminVisitors(apiFetch, { page = 1, limit = 20 } = {}) {
+  const res = await apiFetch(`${ADMIN}/getVisitors`, {
+    method: 'POST',
+    body: JSON.stringify({ page, limit }),
+  });
   const visitors = normalizeList(res, ['visitors', 'data', 'users', 'items', 'results']).map(mapSiteVisitor);
   const stats = res?.stats || res?.summary || {};
-  const signedIn = visitors.filter(v => !v.isVisitor).length;
   return {
     visitors,
     stats: {
-      total: Number(stats.total ?? stats.count ?? visitors.length) || visitors.length,
-      signedIn: Number(stats.signedIn ?? stats.users ?? signedIn) || signedIn,
-      anonymous: Number(stats.anonymous ?? stats.visitors ?? (visitors.length - signedIn)) || Math.max(0, visitors.length - signedIn),
+      total: Number(stats.total) || 0,
+      signedIn: Number(stats.signedIn) || 0,
+      anonymous: Number(stats.anonymous) || 0,
     },
+    ...parseAdminPage(res, { page, limit, itemCount: visitors.length }),
   };
 }
 
@@ -201,8 +220,6 @@ export async function fetchAdminActivityLog(apiFetch, { page = 1, limit = 40, ty
   const logs = normalizeList(res, ['logs', 'activities', 'events', 'data', 'items', 'results']).map(mapActivityLog);
   return {
     logs,
-    page: Number(res?.page) || page,
-    total: Number(res?.total ?? res?.count ?? logs.length) || logs.length,
-    hasMore: Boolean(res?.hasMore ?? ((Number(res?.page) || page) * limit < (Number(res?.total) || 0))),
+    ...parseAdminPage(res, { page, limit, itemCount: logs.length }),
   };
 }

@@ -5632,6 +5632,34 @@ button, input, textarea, select {
   padding-top: 12px;
   border-top: 1px solid #e8eef5;
 }
+.admin-pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid #f1f5f9;
+}
+.admin-pager-label,
+.admin-pager-page {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+.admin-pager-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-table-wrap.is-busy,
+.admin-reports-list.is-busy,
+.admin-ad-view-list.is-busy,
+.admin-visitor-list.is-busy,
+.admin-log-list.is-busy {
+  opacity: 0.55;
+  pointer-events: none;
+}
 
 .admin-stats-row {
   display: grid;

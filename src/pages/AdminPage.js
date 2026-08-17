@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   Shield,
   Users,
@@ -17,12 +17,19 @@ import { useApp } from '../context/AppContext';
 import {
   fetchAdminUsers,
   fetchAdminReports,
+  fetchPendingReportCount,
   setUserActive,
   updateReportStatus,
 } from '../services/adminApi';
 import AdminDashboard from '../components/admin/AdminDashboard';
 import AdminActivityLog from '../components/admin/AdminActivityLog';
 import AdminAvatar from '../components/admin/AdminAvatar';
+import AdminPager from '../components/admin/AdminPager';
+import {
+  ADMIN_LIST_LIMIT,
+  createRequestSeq,
+  shouldStepBackEmptyPage,
+} from '../utils/adminPaging';
 
 function UserAvatar({ user }) {
   return <AdminAvatar user={user} />;
@@ -36,7 +43,7 @@ function formatDate(value) {
 }
 
 export default function AdminPage() {
-  const { user, apiFetch, navigate, showToast, showModal } = useApp();
+  const { user, apiFetch, navigate, showToast, showModal, fetchAdminPendingCount } = useApp();
   const [tab, setTab] = useState('dashboard');
   const [users, setUsers] = useState([]);
   const [reports, setReports] = useState([]);
@@ -47,6 +54,17 @@ export default function AdminPage() {
   const [userFilter, setUserFilter] = useState('all');
   const [reportFilter, setReportFilter] = useState('pending');
   const [insightRefresh, setInsightRefresh] = useState(0);
+  const [userPage, setUserPage] = useState(1);
+  const [userPaging, setUserPaging] = useState({
+    page: 1, limit: ADMIN_LIST_LIMIT, total: 0, totalPages: 0, hasMore: false,
+  });
+  const [reportPage, setReportPage] = useState(1);
+  const [reportPaging, setReportPaging] = useState({
+    page: 1, limit: ADMIN_LIST_LIMIT, total: 0, totalPages: 0, hasMore: false,
+  });
+  const [pendingCount, setPendingCount] = useState(0);
+  const usersReq = useRef(createRequestSeq());
+  const reportsReq = useRef(createRequestSeq());
 
   const isAdmin = !!(user?.isAdmin);
 
@@ -55,42 +73,79 @@ export default function AdminPage() {
     setTab(next);
   };
 
-  const loadUsers = useCallback(async () => {
+  const loadUsers = useCallback(async (pageNum = 1) => {
+    const req = usersReq.current.begin();
     setLoading(true);
     setApiError('');
     try {
-      const data = await fetchAdminUsers(apiFetch);
-      setUsers(data);
+      const res = await fetchAdminUsers(apiFetch, { page: pageNum, limit: ADMIN_LIST_LIMIT });
+      if (!usersReq.current.isCurrent(req)) return;
+      if (shouldStepBackEmptyPage(res.users, pageNum)) {
+        setUserPage(pageNum - 1);
+        return;
+      }
+      setUsers(res.users);
+      setUserPage(res.page);
+      setUserPaging(res);
     } catch (err) {
+      if (!usersReq.current.isCurrent(req)) return;
       setUsers([]);
+      setUserPaging({
+        page: pageNum, limit: ADMIN_LIST_LIMIT, total: 0, totalPages: 0, hasMore: false,
+      });
       setApiError(err.message || 'Could not load users.');
     } finally {
-      setLoading(false);
+      if (usersReq.current.isCurrent(req)) setLoading(false);
     }
   }, [apiFetch]);
 
-  const loadReports = useCallback(async () => {
+  const loadReports = useCallback(async (pageNum = 1, status = reportFilter) => {
+    const req = reportsReq.current.begin();
     setLoading(true);
     setApiError('');
     try {
-      const data = await fetchAdminReports(apiFetch, reportFilter);
-      setReports(data);
+      const res = await fetchAdminReports(apiFetch, {
+        status,
+        page: pageNum,
+        limit: ADMIN_LIST_LIMIT,
+      });
+      if (!reportsReq.current.isCurrent(req)) return;
+      if (shouldStepBackEmptyPage(res.reports, pageNum)) {
+        setReportPage(pageNum - 1);
+        return;
+      }
+      setReports(res.reports);
+      setReportPage(res.page);
+      setReportPaging(res);
+      if (status === 'pending') setPendingCount(res.total);
     } catch (err) {
+      if (!reportsReq.current.isCurrent(req)) return;
       setReports([]);
+      setReportPaging({
+        page: pageNum, limit: ADMIN_LIST_LIMIT, total: 0, totalPages: 0, hasMore: false,
+      });
       setApiError(err.message || 'Could not load reports.');
     } finally {
-      setLoading(false);
+      if (reportsReq.current.isCurrent(req)) setLoading(false);
     }
   }, [apiFetch, reportFilter]);
 
+  const refreshPendingBadge = useCallback(async () => {
+    try {
+      const count = await fetchPendingReportCount(apiFetch);
+      setPendingCount(count);
+      await fetchAdminPendingCount?.();
+    } catch { /* ignore */ }
+  }, [apiFetch, fetchAdminPendingCount]);
+
   const refresh = useCallback(() => {
-    if (tab === 'users') loadUsers();
-    else if (tab === 'reports') loadReports();
+    if (tab === 'users') loadUsers(userPage);
+    else if (tab === 'reports') loadReports(reportPage);
     else {
       setApiError('');
       setInsightRefresh(n => n + 1);
     }
-  }, [tab, loadUsers, loadReports]);
+  }, [tab, loadUsers, loadReports, userPage, reportPage]);
 
   useEffect(() => {
     if (!user) {
@@ -104,17 +159,30 @@ export default function AdminPage() {
   }, [user, isAdmin, navigate, showToast]);
 
   useEffect(() => {
+    if (!isAdmin || tab !== 'users') return;
+    loadUsers(userPage);
+  }, [isAdmin, tab, userPage, loadUsers]);
+
+  useEffect(() => {
+    if (!isAdmin || tab !== 'reports') return;
+    loadReports(reportPage);
+  }, [isAdmin, tab, reportPage, reportFilter, loadReports]);
+
+  useEffect(() => {
     if (!isAdmin) return;
-    if (tab === 'users') loadUsers();
-    else if (tab === 'reports') loadReports();
-    else setLoading(false);
-  }, [tab, isAdmin, loadUsers, loadReports]);
+    if (tab !== 'users' && tab !== 'reports') setLoading(false);
+  }, [tab, isAdmin]);
 
   useEffect(() => {
     if (!isAdmin) return undefined;
     let cancelled = false;
-    fetchAdminUsers(apiFetch)
-      .then((data) => { if (!cancelled) setUsers(data); })
+    fetchAdminUsers(apiFetch, { page: 1, limit: ADMIN_LIST_LIMIT })
+      .then((res) => {
+        if (!cancelled) setUserPaging(prev => ({ ...prev, total: res.total }));
+      })
+      .catch(() => {});
+    fetchPendingReportCount(apiFetch)
+      .then((count) => { if (!cancelled) setPendingCount(count); })
       .catch(() => {});
     return () => { cancelled = true; };
   }, [isAdmin, apiFetch]);
@@ -134,10 +202,7 @@ export default function AdminPage() {
     return list;
   }, [users, userFilter, userSearch]);
 
-  const pendingReportCount = useMemo(
-    () => reports.filter(r => r.status === 'pending').length,
-    [reports]
-  );
+  const pendingReportCount = pendingCount;
 
   const handleToggleUser = (targetUser, activate) => {
     const label = activate ? 'activate' : 'deactivate';
@@ -150,7 +215,7 @@ export default function AdminPage() {
         try {
           await setUserActive(apiFetch, targetUser.id, activate);
           showToast(`User ${label}d.`, 'success');
-          await loadUsers();
+          await loadUsers(userPage);
         } catch {
           showToast(`Failed to ${label} user.`, 'error');
         } finally {
@@ -174,7 +239,8 @@ export default function AdminPage() {
         try {
           await updateReportStatus(apiFetch, report.id, status);
           showToast('Report updated.', 'success');
-          await loadReports();
+          await loadReports(reportPage);
+          await refreshPendingBadge();
         } catch {
           showToast('Failed to update report.', 'error');
         } finally {
@@ -199,8 +265,9 @@ export default function AdminPage() {
           await setUserActive(apiFetch, report.targetUserId, false);
           await updateReportStatus(apiFetch, report.id, 'action_taken', 'User deactivated by admin');
           showToast('User deactivated and report updated.', 'success');
-          if (tab === 'users') await loadUsers();
-          await loadReports();
+          if (tab === 'users') await loadUsers(userPage);
+          await loadReports(reportPage);
+          await refreshPendingBadge();
         } catch {
           showToast('Action failed.', 'error');
         } finally {
@@ -243,7 +310,7 @@ export default function AdminPage() {
           onClick={() => changeTab('users')}
         >
           <Users size={16} /> Users
-          <span className="admin-tab-count">{users.length}</span>
+          <span className="admin-tab-count">{userPaging.total}</span>
         </button>
         <button
           type="button"
@@ -323,73 +390,86 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {loading ? (
+          {loading && users.length === 0 ? (
             <div className="admin-empty">Loading users…</div>
-          ) : filteredUsers.length === 0 ? (
-            <div className="admin-empty">No users match your filters.</div>
           ) : (
-            <div className="admin-table-wrap">
-              <table className="admin-table">
-                <thead>
-                  <tr>
-                    <th>User</th>
-                    <th>Status</th>
-                    <th>Joined</th>
-                    <th>Reports</th>
-                    <th aria-label="Actions" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredUsers.map(u => (
-                    <tr key={u.id}>
-                      <td>
-                        <div className="admin-user-cell">
-                          <UserAvatar user={u} />
-                          <div>
-                            <div className="admin-user-name">
-                              {u.name}
-                              {u.isAdmin && <span className="admin-role-tag">Admin</span>}
+            <>
+              {filteredUsers.length === 0 ? (
+                <div className="admin-empty">No users match your filters.</div>
+              ) : (
+                <div className={`admin-table-wrap${loading ? ' is-busy' : ''}`}>
+                  <table className="admin-table">
+                    <thead>
+                      <tr>
+                        <th>User</th>
+                        <th>Status</th>
+                        <th>Joined</th>
+                        <th>Reports</th>
+                        <th aria-label="Actions" />
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredUsers.map(u => (
+                        <tr key={u.id}>
+                          <td>
+                            <div className="admin-user-cell">
+                              <UserAvatar user={u} />
+                              <div>
+                                <div className="admin-user-name">
+                                  {u.name}
+                                  {u.isAdmin && <span className="admin-role-tag">Admin</span>}
+                                </div>
+                                <div className="admin-user-email">{u.email}</div>
+                              </div>
                             </div>
-                            <div className="admin-user-email">{u.email}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td>
-                        <span className={`admin-status ${u.isActive ? 'active' : 'inactive'}`}>
-                          {u.isActive ? 'Active' : 'Inactive'}
-                        </span>
-                      </td>
-                      <td className="admin-muted">{formatDate(u.createdAt)}</td>
-                      <td className="admin-muted">{u.reportCounter>0 ? u.reportCounter : '—'}</td>
-                      <td>
-                        <div className="admin-row-actions">
-                          {u.isActive ? (
-                            <button
-                              type="button"
-                              className="admin-btn admin-btn-danger"
-                              disabled={actionId === u.id || u.isAdmin}
-                              onClick={() => handleToggleUser(u, false)}
-                              title={u.isAdmin ? 'Cannot deactivate admins' : 'Deactivate'}
-                            >
-                              <UserX size={14} /> Deactivate
-                            </button>
-                          ) : (
-                            <button
-                              type="button"
-                              className="admin-btn admin-btn-success"
-                              disabled={actionId === u.id}
-                              onClick={() => handleToggleUser(u, true)}
-                            >
-                              <UserCheck size={14} /> Activate
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                          </td>
+                          <td>
+                            <span className={`admin-status ${u.isActive ? 'active' : 'inactive'}`}>
+                              {u.isActive ? 'Active' : 'Inactive'}
+                            </span>
+                          </td>
+                          <td className="admin-muted">{formatDate(u.createdAt)}</td>
+                          <td className="admin-muted">{u.reportCounter>0 ? u.reportCounter : '—'}</td>
+                          <td>
+                            <div className="admin-row-actions">
+                              {u.isActive ? (
+                                <button
+                                  type="button"
+                                  className="admin-btn admin-btn-danger"
+                                  disabled={actionId === u.id || u.isAdmin}
+                                  onClick={() => handleToggleUser(u, false)}
+                                  title={u.isAdmin ? 'Cannot deactivate admins' : 'Deactivate'}
+                                >
+                                  <UserX size={14} /> Deactivate
+                                </button>
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="admin-btn admin-btn-success"
+                                  disabled={actionId === u.id}
+                                  onClick={() => handleToggleUser(u, true)}
+                                >
+                                  <UserCheck size={14} /> Activate
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+              <AdminPager
+                page={userPaging.page}
+                limit={userPaging.limit}
+                total={userPaging.total}
+                totalPages={userPaging.totalPages}
+                hasMore={userPaging.hasMore}
+                disabled={loading}
+                onPageChange={setUserPage}
+              />
+            </>
           )}
         </section>
       )}
@@ -406,7 +486,10 @@ export default function AdminPage() {
                   key={id}
                   type="button"
                   className={`admin-pill${reportFilter === id ? ' active' : ''}`}
-                  onClick={() => setReportFilter(id)}
+                  onClick={() => {
+                    setReportFilter(id);
+                    setReportPage(1);
+                  }}
                 >
                   {label}
                 </button>
@@ -414,76 +497,89 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {loading ? (
+          {loading && reports.length === 0 ? (
             <div className="admin-empty">Loading reports…</div>
-          ) : reports.length === 0 ? (
-            <div className="admin-empty">No reports to show.</div>
           ) : (
-            <div className="admin-reports-list">
-              {reports.map(report => (
-                <article key={report.id} className="admin-report-card">
-                  <div className="admin-report-head">
-                    <span className={`admin-status report-${report.status}`}>
-                      {report.status}
-                    </span>
-                    <span className="admin-muted">{formatDate(report.createdAt)}</span>
-                  </div>
-                  <h3 className="admin-report-reason">{report.reason}</h3>
-                  {report.description && (
-                    <p className="admin-report-desc">{report.description}</p>
-                  )}
-                  <div className="admin-report-meta">
-                    <div>
-                      <span className="admin-meta-label">Reporter</span>
-                      <span>{report.reporterName}</span>
-                      {report.reporterEmail && (
-                        <span className="admin-muted"> · {report.reporterEmail}</span>
-                      )}
-                    </div>
-                    <div>
-                      <span className="admin-meta-label">Reported user</span>
-                      <span>{report.targetUserName}</span>
-                    </div>
-                    {report.adTitle && (
-                      <div>
-                        <span className="admin-meta-label">Listing</span>
-                        <span>{report.adTitle}</span>
+            <>
+              {reports.length === 0 ? (
+                <div className="admin-empty">No reports to show.</div>
+              ) : (
+                <div className={`admin-reports-list${loading ? ' is-busy' : ''}`}>
+                  {reports.map(report => (
+                    <article key={report.id} className="admin-report-card">
+                      <div className="admin-report-head">
+                        <span className={`admin-status report-${report.status}`}>
+                          {report.status}
+                        </span>
+                        <span className="admin-muted">{formatDate(report.createdAt)}</span>
                       </div>
-                    )}
-                  </div>
-                  {report.status === 'pending' && (
-                    <div className="admin-report-actions">
-                      <button
-                        type="button"
-                        className="admin-btn admin-btn-ghost"
-                        disabled={actionId === report.id}
-                        onClick={() => handleReportAction(report, 'dismissed')}
-                      >
-                        <XCircle size={14} /> Dismiss
-                      </button>
-                      <button
-                        type="button"
-                        className="admin-btn admin-btn-success"
-                        disabled={actionId === report.id}
-                        onClick={() => handleReportAction(report, 'resolved')}
-                      >
-                        <CheckCircle size={14} /> Resolve
-                      </button>
-                      {report.targetUserId && (
-                        <button
-                          type="button"
-                          className="admin-btn admin-btn-danger"
-                          disabled={actionId === report.id}
-                          onClick={() => handleDeactivateFromReport(report)}
-                        >
-                          <UserX size={14} /> Deactivate user
-                        </button>
+                      <h3 className="admin-report-reason">{report.reason}</h3>
+                      {report.description && (
+                        <p className="admin-report-desc">{report.description}</p>
                       )}
-                    </div>
-                  )}
-                </article>
-              ))}
-            </div>
+                      <div className="admin-report-meta">
+                        <div>
+                          <span className="admin-meta-label">Reporter</span>
+                          <span>{report.reporterName}</span>
+                          {report.reporterEmail && (
+                            <span className="admin-muted"> · {report.reporterEmail}</span>
+                          )}
+                        </div>
+                        <div>
+                          <span className="admin-meta-label">Reported user</span>
+                          <span>{report.targetUserName}</span>
+                        </div>
+                        {report.adTitle && (
+                          <div>
+                            <span className="admin-meta-label">Listing</span>
+                            <span>{report.adTitle}</span>
+                          </div>
+                        )}
+                      </div>
+                      {report.status === 'pending' && (
+                        <div className="admin-report-actions">
+                          <button
+                            type="button"
+                            className="admin-btn admin-btn-ghost"
+                            disabled={actionId === report.id}
+                            onClick={() => handleReportAction(report, 'dismissed')}
+                          >
+                            <XCircle size={14} /> Dismiss
+                          </button>
+                          <button
+                            type="button"
+                            className="admin-btn admin-btn-success"
+                            disabled={actionId === report.id}
+                            onClick={() => handleReportAction(report, 'resolved')}
+                          >
+                            <CheckCircle size={14} /> Resolve
+                          </button>
+                          {report.targetUserId && (
+                            <button
+                              type="button"
+                              className="admin-btn admin-btn-danger"
+                              disabled={actionId === report.id}
+                              onClick={() => handleDeactivateFromReport(report)}
+                            >
+                              <UserX size={14} /> Deactivate user
+                            </button>
+                          )}
+                        </div>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              )}
+              <AdminPager
+                page={reportPaging.page}
+                limit={reportPaging.limit}
+                total={reportPaging.total}
+                totalPages={reportPaging.totalPages}
+                hasMore={reportPaging.hasMore}
+                disabled={loading}
+                onPageChange={setReportPage}
+              />
+            </>
           )}
         </section>
       )}

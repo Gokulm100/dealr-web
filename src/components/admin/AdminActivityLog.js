@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Eye,
   Globe,
@@ -20,7 +20,13 @@ import {
   pageLabel,
   shortVisitorId,
 } from '../../utils/adminDisplay';
+import {
+  ADMIN_ACTIVITY_LIMIT,
+  createRequestSeq,
+  shouldStepBackEmptyPage,
+} from '../../utils/adminPaging';
 import AdminAvatar from './AdminAvatar';
+import AdminPager from './AdminPager';
 
 const FILTERS = [
   { id: 'all', label: 'All' },
@@ -52,30 +58,44 @@ export default function AdminActivityLog({ apiFetch, refreshKey, onError }) {
   const [type, setType] = useState('all');
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [loadingMore, setLoadingMore] = useState(false);
+  const [paging, setPaging] = useState({
+    page: 1, limit: ADMIN_ACTIVITY_LIMIT, total: 0, totalPages: 0, hasMore: false,
+  });
+  const reqSeq = useRef(createRequestSeq());
 
-  const load = useCallback(async (pageNum = 1, append = false) => {
-    if (pageNum === 1) setLoading(true);
-    else setLoadingMore(true);
+  const load = useCallback(async (pageNum = 1, typeFilter = type) => {
+    const req = reqSeq.current.begin();
+    setLoading(true);
     try {
-      const res = await fetchAdminActivityLog(apiFetch, { page: pageNum, limit: 40, type });
-      setLogs(prev => (append ? [...prev, ...res.logs] : res.logs));
-      setPage(res.page || pageNum);
-      setHasMore(res.hasMore);
+      const res = await fetchAdminActivityLog(apiFetch, {
+        page: pageNum,
+        limit: ADMIN_ACTIVITY_LIMIT,
+        type: typeFilter,
+      });
+      if (!reqSeq.current.isCurrent(req)) return;
+      if (shouldStepBackEmptyPage(res.logs, pageNum)) {
+        setPage(pageNum - 1);
+        return;
+      }
+      setLogs(res.logs);
+      setPage(res.page);
+      setPaging(res);
       onError('');
     } catch (err) {
-      if (!append) setLogs([]);
+      if (!reqSeq.current.isCurrent(req)) return;
+      setLogs([]);
+      setPaging({
+        page: pageNum, limit: ADMIN_ACTIVITY_LIMIT, total: 0, totalPages: 0, hasMore: false,
+      });
       onError(err.message || 'Could not load activity log.');
     } finally {
-      setLoading(false);
-      setLoadingMore(false);
+      if (reqSeq.current.isCurrent(req)) setLoading(false);
     }
   }, [apiFetch, type, onError]);
 
   useEffect(() => {
-    load(1, false);
-  }, [load, refreshKey]);
+    load(page, type);
+  }, [load, page, type, refreshKey]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -112,7 +132,10 @@ export default function AdminActivityLog({ apiFetch, refreshKey, onError }) {
               key={id}
               type="button"
               className={`admin-pill${type === id ? ' active' : ''}`}
-              onClick={() => setType(id)}
+              onClick={() => {
+                setType(id);
+                setPage(1);
+              }}
             >
               {label}
             </button>
@@ -120,49 +143,48 @@ export default function AdminActivityLog({ apiFetch, refreshKey, onError }) {
         </div>
       </div>
 
-      {loading ? (
+      {loading && logs.length === 0 ? (
         <div className="admin-empty">Loading activity…</div>
-      ) : filtered.length === 0 ? (
-        <div className="admin-empty">No activity to show.</div>
       ) : (
         <>
-          <ol className="admin-log-list">
-            {filtered.map((log) => {
-              const name = actorDisplayName(log);
-              return (
-                <li key={log.id} className="admin-log-row">
-                  <div className={`admin-log-type is-${log.type || 'activity'}`}>
-                    <TypeIcon type={log.type} />
-                  </div>
-                  <AdminAvatar user={{ ...log, name }} size={36} />
-                  <div className="admin-log-copy">
-                    <div className="admin-log-message">{activityMessage(log)}</div>
-                    <div className="admin-muted">
-                      {name}
-                      {log.isVisitor && shortVisitorId(log) ? ` · ID ${shortVisitorId(log)}` : ''}
-                      {log.adTitle ? ` · ${log.adTitle}` : ''}
-                      {log.page ? ` · ${pageLabel(log.page)}` : ''}
+          {filtered.length === 0 ? (
+            <div className="admin-empty">No activity to show.</div>
+          ) : (
+            <ol className={`admin-log-list${loading ? ' is-busy' : ''}`}>
+              {filtered.map((log) => {
+                const name = actorDisplayName(log);
+                return (
+                  <li key={log.id} className="admin-log-row">
+                    <div className={`admin-log-type is-${log.type || 'activity'}`}>
+                      <TypeIcon type={log.type} />
                     </div>
-                  </div>
-                  <time className="admin-log-time" dateTime={log.createdAt || undefined} title={formatAdminDateTime(log.createdAt)}>
-                    {formatRelativeTime(log.createdAt)}
-                  </time>
-                </li>
-              );
-            })}
-          </ol>
-          {hasMore && (
-            <div className="admin-log-more">
-              <button
-                type="button"
-                className="admin-btn admin-btn-ghost"
-                disabled={loadingMore}
-                onClick={() => load(page + 1, true)}
-              >
-                {loadingMore ? 'Loading…' : 'Load more'}
-              </button>
-            </div>
+                    <AdminAvatar user={{ ...log, name }} size={36} />
+                    <div className="admin-log-copy">
+                      <div className="admin-log-message">{activityMessage(log)}</div>
+                      <div className="admin-muted">
+                        {name}
+                        {log.isVisitor && shortVisitorId(log) ? ` · ID ${shortVisitorId(log)}` : ''}
+                        {log.adTitle ? ` · ${log.adTitle}` : ''}
+                        {log.page ? ` · ${pageLabel(log.page)}` : ''}
+                      </div>
+                    </div>
+                    <time className="admin-log-time" dateTime={log.createdAt || undefined} title={formatAdminDateTime(log.createdAt)}>
+                      {formatRelativeTime(log.createdAt)}
+                    </time>
+                  </li>
+                );
+              })}
+            </ol>
           )}
+          <AdminPager
+            page={paging.page}
+            limit={paging.limit}
+            total={paging.total}
+            totalPages={paging.totalPages}
+            hasMore={paging.hasMore}
+            disabled={loading}
+            onPageChange={setPage}
+          />
         </>
       )}
     </section>
