@@ -13,6 +13,12 @@ function normalizeList(res, keys = ['data', 'users', 'reports', 'items', 'result
   for (const key of keys) {
     if (Array.isArray(res?.[key])) return res[key];
   }
+  const nested = res?.data;
+  if (nested && typeof nested === 'object' && !Array.isArray(nested)) {
+    for (const key of keys) {
+      if (Array.isArray(nested[key])) return nested[key];
+    }
+  }
   return [];
 }
 

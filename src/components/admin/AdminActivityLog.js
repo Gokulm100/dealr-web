@@ -79,7 +79,13 @@ export default function AdminActivityLog({ apiFetch, refreshKey, onError }) {
       }
       setLogs(res.logs);
       setPage(res.page);
-      setPaging(res);
+      setPaging({
+        page: res.page,
+        limit: ADMIN_ACTIVITY_LIMIT,
+        total: res.total,
+        totalPages: res.totalPages,
+        hasMore: res.hasMore,
+      });
       onError('');
     } catch (err) {
       if (!reqSeq.current.isCurrent(req)) return;
@@ -147,6 +153,15 @@ export default function AdminActivityLog({ apiFetch, refreshKey, onError }) {
         <div className="admin-empty">Loading activity…</div>
       ) : (
         <>
+          <AdminPager
+            page={paging.page}
+            limit={ADMIN_ACTIVITY_LIMIT}
+            total={paging.total}
+            totalPages={paging.totalPages}
+            hasMore={paging.hasMore}
+            disabled={loading}
+            onPageChange={setPage}
+          />
           {filtered.length === 0 ? (
             <div className="admin-empty">No activity to show.</div>
           ) : (
@@ -178,7 +193,7 @@ export default function AdminActivityLog({ apiFetch, refreshKey, onError }) {
           )}
           <AdminPager
             page={paging.page}
-            limit={paging.limit}
+            limit={ADMIN_ACTIVITY_LIMIT}
             total={paging.total}
             totalPages={paging.totalPages}
             hasMore={paging.hasMore}

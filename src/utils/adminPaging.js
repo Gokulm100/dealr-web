@@ -1,17 +1,28 @@
 export const ADMIN_LIST_LIMIT = 10;
 export const ADMIN_ACTIVITY_LIMIT = 10;
 
+function readMeta(res = {}) {
+  const nested = res.pagination && typeof res.pagination === 'object' ? res.pagination : null;
+  const data = res.data && typeof res.data === 'object' && !Array.isArray(res.data) ? res.data : null;
+  return nested || data || res;
+}
+
 export function parseAdminPage(res = {}, { page = 1, limit = ADMIN_LIST_LIMIT, itemCount = 0 } = {}) {
-  const parsedLimit = Math.max(1, Math.min(100, Number(res.limit) || limit || ADMIN_LIST_LIMIT));
-  const parsedPage = Math.max(1, Number(res.page) || page || 1);
-  const total = Math.max(0, Number(res.total) || 0);
-  const reportedPages = Number(res.totalPages);
+  const meta = readMeta(res);
+  const parsedLimit = Math.max(1, Math.min(100, Number(limit) || Number(meta.limit) || Number(res.limit) || ADMIN_LIST_LIMIT));
+  const parsedPage = Math.max(1, Number(meta.page) || Number(res.page) || page || 1);
+  const rawTotal = meta.total ?? res.total ?? res.count ?? meta.count;
+  const hasExplicitTotal = rawTotal != null && rawTotal !== '' && Number.isFinite(Number(rawTotal));
+  const total = hasExplicitTotal ? Math.max(0, Number(rawTotal)) : 0;
+  const reportedPages = Number(meta.totalPages ?? res.totalPages);
   const totalPages = Number.isFinite(reportedPages)
     ? Math.max(0, reportedPages)
     : (total === 0 ? 0 : Math.ceil(total / parsedLimit));
-  const hasMore = typeof res.hasMore === 'boolean'
-    ? res.hasMore
-    : (totalPages > 0 ? parsedPage < totalPages : parsedPage * parsedLimit < total);
+  const explicitHasMore = meta.hasMore ?? res.hasMore;
+  const inferredHasMore = total > 0
+    ? parsedPage * parsedLimit < total
+    : itemCount >= parsedLimit;
+  const hasMore = typeof explicitHasMore === 'boolean' ? explicitHasMore : inferredHasMore;
   return {
     page: parsedPage,
     limit: parsedLimit,
