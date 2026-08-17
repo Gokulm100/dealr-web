@@ -62,42 +62,140 @@ export default function AdminActivityLog({ apiFetch, refreshKey, onError }) {
     page: 1, limit: ADMIN_ACTIVITY_LIMIT, total: 0, totalPages: 0, hasMore: false,
   });
   const reqSeq = useRef(createRequestSeq());
+  const chunkCacheRef = useRef({
+    type: null,
+    backendSize: 0,
+    chunks: {},
+    total: 0,
+    hasMore: false,
+  });
 
-  const load = useCallback(async (pageNum = 1, typeFilter = type) => {
+  const load = useCallback(async (uiPage = 1, typeFilter = type) => {
     const req = reqSeq.current.begin();
+    const limit = ADMIN_ACTIVITY_LIMIT;
     setLoading(true);
     try {
-      const res = await fetchAdminActivityLog(apiFetch, {
-        page: pageNum,
-        limit: ADMIN_ACTIVITY_LIMIT,
+      const cache = chunkCacheRef.current;
+      if (cache.type !== typeFilter) {
+        chunkCacheRef.current = {
+          type: typeFilter,
+          backendSize: 0,
+          chunks: {},
+          total: 0,
+          hasMore: false,
+        };
+      }
+
+      const applySlice = (slice, meta, pageNum) => {
+        if (!reqSeq.current.isCurrent(req)) return;
+        if (shouldStepBackEmptyPage(slice, pageNum)) {
+          setPage(pageNum - 1);
+          return;
+        }
+        const total = Number(meta.total) || 0;
+        const backendSize = chunkCacheRef.current.backendSize || limit;
+        const totalPages = total > 0
+          ? Math.ceil(total / limit)
+          : (Number(meta.totalPages) > 0
+            ? Math.ceil((Number(meta.totalPages) * backendSize) / limit)
+            : 0);
+        const hasMore = total > 0
+          ? pageNum * limit < total
+          : (slice.length >= limit || Boolean(meta.hasMore));
+        setLogs(slice.slice(0, limit));
+        setPaging({
+          page: pageNum,
+          limit,
+          total,
+          totalPages,
+          hasMore,
+        });
+        onError('');
+      };
+
+      const fetchBackendPage = (backendPage) => fetchAdminActivityLog(apiFetch, {
+        page: backendPage,
+        limit,
         type: typeFilter,
       });
-      if (!reqSeq.current.isCurrent(req)) return;
-      if (shouldStepBackEmptyPage(res.logs, pageNum)) {
-        setPage(pageNum - 1);
+
+      if (!chunkCacheRef.current.backendSize) {
+        const probe = await fetchBackendPage(1);
+        if (!reqSeq.current.isCurrent(req)) return;
+        const rows = probe.logs || [];
+        chunkCacheRef.current.total = probe.total;
+        chunkCacheRef.current.hasMore = probe.hasMore;
+        chunkCacheRef.current.totalPages = probe.totalPages;
+        if (rows.length <= limit) {
+          chunkCacheRef.current.backendSize = limit;
+          chunkCacheRef.current.chunks[1] = rows;
+          if (uiPage === 1) {
+            applySlice(rows, probe, 1);
+            return;
+          }
+        } else {
+          chunkCacheRef.current.backendSize = rows.length;
+          chunkCacheRef.current.chunks[1] = rows;
+          if (uiPage === 1) {
+            applySlice(rows.slice(0, limit), probe, 1);
+            return;
+          }
+        }
+      }
+
+      const backendSize = chunkCacheRef.current.backendSize || limit;
+
+      if (backendSize <= limit) {
+        let rows = chunkCacheRef.current.chunks[uiPage];
+        let meta = chunkCacheRef.current;
+        if (!rows) {
+          const res = await fetchBackendPage(uiPage);
+          if (!reqSeq.current.isCurrent(req)) return;
+          rows = res.logs || [];
+          chunkCacheRef.current.chunks[uiPage] = rows;
+          chunkCacheRef.current.total = res.total;
+          chunkCacheRef.current.hasMore = res.hasMore;
+          meta = res;
+        }
+        applySlice(rows, meta, uiPage);
         return;
       }
-      setLogs(res.logs);
-      setPage(res.page);
-      setPaging({
-        page: res.page,
-        limit: ADMIN_ACTIVITY_LIMIT,
-        total: res.total,
-        totalPages: res.totalPages,
-        hasMore: res.hasMore,
-      });
-      onError('');
+
+      const backendPage = Math.floor((uiPage - 1) * limit / backendSize) + 1;
+      const offset = ((uiPage - 1) * limit) % backendSize;
+      let chunk = chunkCacheRef.current.chunks[backendPage];
+      let meta = chunkCacheRef.current;
+      if (!chunk) {
+        const res = await fetchBackendPage(backendPage);
+        if (!reqSeq.current.isCurrent(req)) return;
+        chunk = res.logs || [];
+        chunkCacheRef.current.chunks[backendPage] = chunk;
+        chunkCacheRef.current.total = res.total;
+        chunkCacheRef.current.hasMore = res.hasMore;
+        meta = res;
+      }
+      applySlice(chunk.slice(offset, offset + limit), meta, uiPage);
     } catch (err) {
       if (!reqSeq.current.isCurrent(req)) return;
       setLogs([]);
       setPaging({
-        page: pageNum, limit: ADMIN_ACTIVITY_LIMIT, total: 0, totalPages: 0, hasMore: false,
+        page: uiPage, limit, total: 0, totalPages: 0, hasMore: false,
       });
       onError(err.message || 'Could not load activity log.');
     } finally {
       if (reqSeq.current.isCurrent(req)) setLoading(false);
     }
   }, [apiFetch, type, onError]);
+
+  useEffect(() => {
+    chunkCacheRef.current = {
+      type: null,
+      backendSize: 0,
+      chunks: {},
+      total: 0,
+      hasMore: false,
+    };
+  }, [type, refreshKey]);
 
   useEffect(() => {
     load(page, type);
@@ -166,7 +264,7 @@ export default function AdminActivityLog({ apiFetch, refreshKey, onError }) {
             <div className="admin-empty">No activity to show.</div>
           ) : (
             <ol className={`admin-log-list${loading ? ' is-busy' : ''}`}>
-              {filtered.map((log) => {
+              {filtered.slice(0, ADMIN_ACTIVITY_LIMIT).map((log) => {
                 const name = actorDisplayName(log);
                 return (
                   <li key={log.id} className="admin-log-row">

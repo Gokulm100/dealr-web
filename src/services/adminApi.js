@@ -219,13 +219,23 @@ export async function fetchAdminVisitors(apiFetch, { page = 1, limit = ADMIN_LIS
 }
 
 export async function fetchAdminActivityLog(apiFetch, { page = 1, limit = ADMIN_ACTIVITY_LIMIT, type } = {}) {
+  const safeLimit = Math.min(100, Math.max(1, Number(limit) || ADMIN_ACTIVITY_LIMIT));
+  const safePage = Math.max(1, Number(page) || 1);
   const res = await apiFetch(`${ADMIN}/getActivityLog`, {
     method: 'POST',
-    body: JSON.stringify({ page, limit, type: type && type !== 'all' ? type : undefined }),
+    body: JSON.stringify({
+      page: safePage,
+      limit: safeLimit,
+      pageSize: safeLimit,
+      perPage: safeLimit,
+      skip: (safePage - 1) * safeLimit,
+      offset: (safePage - 1) * safeLimit,
+      type: type && type !== 'all' ? type : undefined,
+    }),
   });
   const logs = normalizeList(res, ['logs', 'activities', 'events', 'data', 'items', 'results']).map(mapActivityLog);
   return {
     logs,
-    ...parseAdminPage(res, { page, limit, itemCount: logs.length }),
+    ...parseAdminPage(res, { page: safePage, limit: safeLimit, itemCount: logs.length }),
   };
 }
