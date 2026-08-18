@@ -51,31 +51,3 @@ export default function AdminPager({
     </div>
   );
 }
-
-  return (
-    <div className="admin-pager">
-      <span className="admin-pager-label">{pageRangeLabel({ page, limit, total })}</span>
-      <div className="admin-pager-controls">
-        <button
-          type="button"
-          className="admin-btn admin-btn-ghost"
-          disabled={disabled || atStart}
-          onClick={() => onPageChange(page - 1)}
-        >
-          Prev
-        </button>
-        <span className="admin-pager-page">
-          Page {page} of {totalPages}
-        </span>
-        <button
-          type="button"
-          className="admin-btn admin-btn-ghost"
-          disabled={disabled || atEnd}
-          onClick={() => onPageChange(page + 1)}
-        >
-          Next
-        </button>
-      </div>
-    </div>
-  );
-}
