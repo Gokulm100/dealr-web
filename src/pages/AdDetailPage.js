@@ -35,14 +35,16 @@ const SAFETY_TIPS = [
 function ImageCarousel({ images }) {
   const [idx, setIdx] = useState(0);
   const slides = Array.isArray(images) ? images.filter(Boolean) : [];
+  const firstSlide = slides[0];
+  const slideCount = slides.length;
 
   useEffect(() => {
     setIdx(0);
-  }, [slides[0], slides.length]);
+  }, [firstSlide, slideCount]);
 
-  if (!slides.length) return null;
+  if (!slideCount) return null;
 
-  const go = (dir) => setIdx(i => (i + dir + slides.length) % slides.length);
+  const go = (dir) => setIdx(i => (i + dir + slideCount) % slideCount);
 
   return (
     <div className="img-carousel-wrap">
@@ -56,20 +58,20 @@ function ImageCarousel({ images }) {
               <img
                 className="carousel-img"
                 src={src}
-                alt={`Photo ${i + 1} of ${slides.length}`}
+                alt={`${i + 1} of ${slideCount}`}
                 onError={e => { e.target.src = FALLBACK; }}
               />
             </div>
           ))}
         </div>
-        {slides.length > 1 && (
+        {slideCount > 1 && (
           <>
             <button type="button" className="carousel-nav prev" onClick={() => go(-1)} aria-label="Previous photo">‹</button>
             <button type="button" className="carousel-nav next" onClick={() => go(1)} aria-label="Next photo">›</button>
           </>
         )}
       </div>
-      {slides.length > 1 && (
+      {slideCount > 1 && (
         <div className="carousel-dots">
           {slides.map((_, i) => (
             <button
