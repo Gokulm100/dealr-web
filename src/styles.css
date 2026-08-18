@@ -1964,9 +1964,29 @@ button, input, textarea, select {
 .detail-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 24px; }
 .detail-layout > * { min-width: 0; }
 
-.img-carousel-wrap { position: relative; border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 20px; background: var(--border); }
-.img-carousel { display: flex; overflow: hidden; }
-.carousel-img { width: 100%; min-width: 100%; max-height: 380px; object-fit: cover; }
+.img-carousel-wrap { position: relative; border-radius: var(--radius-lg); margin-bottom: 20px; }
+.img-carousel-viewport {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--border);
+}
+.img-carousel {
+  display: flex;
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+.carousel-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+}
+.carousel-img {
+  display: block;
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+}
 .carousel-dots { display: flex; justify-content: center; gap: 6px; padding: 10px 0 0; }
 .carousel-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); border: none; cursor: pointer; transition: all 0.2s; }
 .carousel-dot.active { background: var(--primary); width: 18px; border-radius: 4px; }
@@ -1974,6 +1994,7 @@ button, input, textarea, select {
   position: absolute; top: 50%; transform: translateY(-50%);
   width: 36px; height: 36px; background: rgba(0,0,0,0.4); border-radius: 50%;
   border: none; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  z-index: 1;
 }
 .carousel-nav.prev { left: 12px; }
 .carousel-nav.next { right: 12px; }

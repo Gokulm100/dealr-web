@@ -34,24 +34,54 @@ const SAFETY_TIPS = [
 
 function ImageCarousel({ images }) {
   const [idx, setIdx] = useState(0);
-  if (!images?.length) return null;
-  const go = (dir) => setIdx(i => (i + dir + images.length) % images.length);
+  const slides = Array.isArray(images) ? images.filter(Boolean) : [];
+
+  useEffect(() => {
+    setIdx(0);
+  }, [slides[0], slides.length]);
+
+  if (!slides.length) return null;
+
+  const go = (dir) => setIdx(i => (i + dir + slides.length) % slides.length);
+
   return (
     <div className="img-carousel-wrap">
-      <div className="img-carousel" style={{ transform: `translateX(-${idx * 100}%)`, transition: 'transform 0.3s', display: 'flex' }}>
-        {images.map((src, i) => (
-          <img key={i} className="carousel-img" src={src} alt={`img ${i + 1}`} onError={e => { e.target.src = FALLBACK; }} style={{ minWidth: '100%' }} />
-        ))}
-      </div>
-      {images.length > 1 && <>
-        <button className="carousel-nav prev" onClick={() => go(-1)}>‹</button>
-        <button className="carousel-nav next" onClick={() => go(1)}>›</button>
-        <div className="carousel-dots">
-          {images.map((_, i) => (
-            <button key={i} className={`carousel-dot${i === idx ? ' active' : ''}`} onClick={() => setIdx(i)} />
+      <div className="img-carousel-viewport">
+        <div
+          className="img-carousel"
+          style={{ transform: `translateX(-${idx * 100}%)` }}
+        >
+          {slides.map((src, i) => (
+            <div className="carousel-slide" key={`${src}-${i}`}>
+              <img
+                className="carousel-img"
+                src={src}
+                alt={`Photo ${i + 1} of ${slides.length}`}
+                onError={e => { e.target.src = FALLBACK; }}
+              />
+            </div>
           ))}
         </div>
-      </>}
+        {slides.length > 1 && (
+          <>
+            <button type="button" className="carousel-nav prev" onClick={() => go(-1)} aria-label="Previous photo">‹</button>
+            <button type="button" className="carousel-nav next" onClick={() => go(1)} aria-label="Next photo">›</button>
+          </>
+        )}
+      </div>
+      {slides.length > 1 && (
+        <div className="carousel-dots">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              className={`carousel-dot${i === idx ? ' active' : ''}`}
+              onClick={() => setIdx(i)}
+              aria-label={`Show photo ${i + 1}`}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
