@@ -5587,6 +5587,8 @@ button, input, textarea, select {
 .admin-btn-danger:hover:not(:disabled) { background: #fee2e2; }
 .admin-btn-ghost { background: #f8fafc; border-color: #e8eef5; color: var(--muted); }
 .admin-btn-ghost:hover:not(:disabled) { background: #f1f5f9; color: var(--text); }
+.admin-btn-admin { background: #fffbeb; border-color: #fde68a; color: #b45309; }
+.admin-btn-admin:hover:not(:disabled) { background: #fef3c7; }
 .admin-reports-list { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
 .admin-report-card {
   padding: 16px;

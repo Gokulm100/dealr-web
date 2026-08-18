@@ -72,6 +72,13 @@ export async function setUserActive(apiFetch, userId, isActive) {
   });
 }
 
+export async function setUserAdmin(apiFetch, userId, isAdmin) {
+  return apiFetch(`${ADMIN}/setUserAdmin`, {
+    method: 'POST',
+    body: JSON.stringify({ userId, isAdmin }),
+  });
+}
+
 export async function fetchAdminReports(apiFetch, { status = 'pending', page = 1, limit = ADMIN_LIST_LIMIT } = {}) {
   const res = await apiFetch(`${ADMIN}/getReports`, {
     method: 'POST',

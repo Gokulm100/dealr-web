@@ -7,6 +7,8 @@ import {
   RefreshCw,
   UserCheck,
   UserX,
+  ShieldPlus,
+  ShieldOff,
   CheckCircle,
   XCircle,
   AlertTriangle,
@@ -19,6 +21,7 @@ import {
   fetchAdminReports,
   fetchPendingReportCount,
   setUserActive,
+  setUserAdmin,
   updateReportStatus,
 } from '../services/adminApi';
 import AdminDashboard from '../components/admin/AdminDashboard';
@@ -67,6 +70,7 @@ export default function AdminPage() {
   const reportsReq = useRef(createRequestSeq());
 
   const isAdmin = !!(user?.isAdmin);
+  const currentUserId = String(user?._id || user?.id || '');
 
   const changeTab = (next) => {
     setApiError('');
@@ -216,8 +220,34 @@ export default function AdminPage() {
           await setUserActive(apiFetch, targetUser.id, activate);
           showToast(`User ${label}d.`, 'success');
           await loadUsers(userPage);
-        } catch {
-          showToast(`Failed to ${label} user.`, 'error');
+        } catch (err) {
+          showToast(err.message || `Failed to ${label} user.`, 'error');
+        } finally {
+          setActionId(null);
+        }
+      }
+    );
+  };
+
+  const handleSetAdmin = (targetUser, makeAdmin) => {
+    if (!makeAdmin && String(targetUser.id) === currentUserId) {
+      showToast('You cannot remove your own admin access.', 'error');
+      return;
+    }
+    showModal(
+      makeAdmin ? 'Make admin' : 'Remove admin',
+      makeAdmin
+        ? `Grant admin access to "${targetUser.name}" (${targetUser.email})? They will be able to manage users, reports, and this panel.`
+        : `Remove admin access from "${targetUser.name}" (${targetUser.email})?`,
+      makeAdmin ? '🛡️' : '⚠️',
+      async () => {
+        setActionId(targetUser.id);
+        try {
+          await setUserAdmin(apiFetch, targetUser.id, makeAdmin);
+          showToast(makeAdmin ? 'User is now an admin.' : 'Admin access removed.', 'success');
+          await loadUsers(userPage);
+        } catch (err) {
+          showToast(err.message || (makeAdmin ? 'Failed to make user admin.' : 'Failed to remove admin access.'), 'error');
         } finally {
           setActionId(null);
         }
@@ -338,7 +368,7 @@ export default function AdminPage() {
             <strong>Could not reach admin API</strong>
             <p>{apiError}</p>
             <p className="admin-api-hint">
-              Ensure the backend exposes POST routes: /api/admin/getUsers, setUserActive, getReports, updateReport, getAdViewers, getVisitors, getActivityLog, and POST /api/analytics/track.
+              Ensure the backend exposes POST routes: /api/admin/getUsers, setUserActive, setUserAdmin, getReports, updateReport, getAdViewers, getVisitors, getActivityLog, and POST /api/analytics/track.
             </p>
           </div>
         </div>
@@ -432,6 +462,29 @@ export default function AdminPage() {
                           <td className="admin-muted">{u.reportCounter>0 ? u.reportCounter : '—'}</td>
                           <td>
                             <div className="admin-row-actions">
+                              {u.isAdmin ? (
+                                String(u.id) !== currentUserId && (
+                                  <button
+                                    type="button"
+                                    className="admin-btn admin-btn-ghost"
+                                    disabled={actionId === u.id}
+                                    onClick={() => handleSetAdmin(u, false)}
+                                    title="Remove admin access"
+                                  >
+                                    <ShieldOff size={14} /> Remove admin
+                                  </button>
+                                )
+                              ) : (
+                                <button
+                                  type="button"
+                                  className="admin-btn admin-btn-admin"
+                                  disabled={actionId === u.id}
+                                  onClick={() => handleSetAdmin(u, true)}
+                                  title="Grant admin access"
+                                >
+                                  <ShieldPlus size={14} /> Make admin
+                                </button>
+                              )}
                               {u.isActive ? (
                                 <button
                                   type="button"
