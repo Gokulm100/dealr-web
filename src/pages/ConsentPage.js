@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, Lock, FileText } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { unregisterPushToken } from '../utils/pushNotifications';
 
 export default function ConsentPage() {
   const { user, apiFetch, navigate, showToast, showModal, hasConsented, setHasConsented } = useApp();
@@ -48,6 +49,7 @@ export default function ConsentPage() {
   const handleRevoke = () => {
     showModal('Revoke Consent', 'Withdraw your consent? You will be logged out.', '⚠️', async () => {
       try {
+        await unregisterPushToken(apiFetch);
         await apiFetch('/api/users/revokeConsent', {
           method: 'POST',
           body: JSON.stringify({ version: data?.version, status: 'revoked', timestamp: new Date().toISOString() }),

@@ -4,8 +4,14 @@ import { initSocket, disconnectSocket, getSocket, subscribeChatMessages, emitJoi
 import { parseChatPayload } from '../utils/chatSocket';
 import { formatLocationName, toApiLocationFilter } from '../utils/locationFilter';
 import { isSeededDescription, stripSeededMarker } from '../utils/seededListing';
-import { getAdIdFromLocation } from '../utils/facebookShare';
 import { initSiteAnalytics, trackPageView } from '../utils/siteAnalytics';
+import { getLaunchRouteFromLocation } from '../utils/notificationLaunch';
+import {
+  listenForForegroundPush,
+  listenForNotificationClicks,
+  registerPushToken,
+  unregisterPushToken,
+} from '../utils/pushNotifications';
 
 const API = process.env.REACT_APP_API_BASE_URL || 'https://e4u-backend.onrender.com';
 const LIMIT = 10;
@@ -56,9 +62,12 @@ export function AppProvider({ children }) {
     try { return JSON.parse(localStorage.getItem('user'))?.hasConsented || false; } catch { return false; }
   });
 
-  const [currentPage, setCurrentPage] = useState(() => (getAdIdFromLocation() ? 'detail' : 'home'));
-  const [pageExtra, setPageExtra] = useState({});
-  const currentPageRef = useRef(getAdIdFromLocation() ? 'detail' : 'home');
+  const launchRoute = getLaunchRouteFromLocation();
+  const [currentPage, setCurrentPage] = useState(() => launchRoute.page);
+  const [pageExtra, setPageExtra] = useState(() => launchRoute.extra || {});
+  const currentPageRef = useRef(launchRoute.page);
+  const pageExtraRef = useRef(launchRoute.extra || {});
+  pageExtraRef.current = pageExtra;
 
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -141,13 +150,14 @@ export function AppProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
+    unregisterPushToken(apiFetch).catch(() => {});
     disconnectSocket();
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
     setHasConsented(false);
-  }, []);
+  }, [apiFetch]);
 
   const buildListingsQuery = useCallback(() => {
     const catObj = categories.find(c => c.name === selectedCategory);
@@ -316,6 +326,32 @@ export function AppProvider({ children }) {
       disconnectSocket();
     }
   }, [user?._id]);
+
+  useEffect(() => {
+    if (!user?._id) return undefined;
+    registerPushToken(apiFetch).catch(() => {});
+    return undefined;
+  }, [user?._id, apiFetch]);
+
+  useEffect(() => {
+    const stopClicks = listenForNotificationClicks(navigate);
+    const stopForeground = listenForForegroundPush({
+      navigate,
+      showToast,
+      isCurrentChat: (data) => {
+        if (currentPageRef.current !== 'chat') return false;
+        const info = pageExtraRef.current?.chatInfo;
+        if (!info) return false;
+        return String(info.adId) === String(data.adId)
+          && String(info.buyerId) === String(data.buyerId)
+          && String(info.sellerId) === String(data.sellerId);
+      },
+    });
+    return () => {
+      stopClicks();
+      stopForeground();
+    };
+  }, [navigate, showToast]);
 
   useEffect(() => {
     if (!user?._id) return undefined;
