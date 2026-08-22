@@ -1,25 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1528" viewBox="0 0 1080 1528" role="img" aria-labelledby="title desc">
   <title id="title">Dealr Trivandrum free ads flyer</title>
-  <desc id="desc">Malayalam flyer asking people in Trivandrum to post ads for free using Dealr.</desc>
+  <desc id="desc">Simple Malayalam flyer asking people in Trivandrum to post ads for free using Dealr.</desc>
   <defs>
     <linearGradient id="pageBg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#f8fbff"/>
-      <stop offset="0.52" stop-color="#e8f1ff"/>
+      <stop offset="0.55" stop-color="#e8f1ff"/>
       <stop offset="1" stop-color="#dce9fb"/>
     </linearGradient>
-    <linearGradient id="heroBlue" x1="0" y1="0" x2="1" y2="1">
+    <linearGradient id="brandBlue" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#1e4fd6"/>
       <stop offset="1" stop-color="#2f7ff0"/>
-    </linearGradient>
-    <linearGradient id="softSky" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#f7fbff"/>
-      <stop offset="1" stop-color="#d9eaff"/>
     </linearGradient>
     <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
       <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#1e4fd6" flood-opacity="0.16"/>
     </filter>
-    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#0f172a" flood-opacity="0.12"/>
+    <filter id="freeShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="10" flood-color="#ff5c6a" flood-opacity="0.25"/>
     </filter>
     <style>
       .ml {
@@ -28,130 +24,63 @@
       .latin {
         font-family: "Sora", "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
       }
-      .smallCaps {
-        font-size: 26px;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
     </style>
   </defs>
 
   <rect width="1080" height="1528" fill="url(#pageBg)"/>
-  <circle cx="126" cy="106" r="210" fill="#ffffff" opacity="0.78"/>
-  <circle cx="1006" cy="182" r="240" fill="#ff5c6a" opacity="0.08"/>
-  <circle cx="978" cy="768" r="320" fill="#2f7ff0" opacity="0.09"/>
+  <circle cx="120" cy="120" r="230" fill="#ffffff" opacity="0.74"/>
+  <circle cx="992" cy="218" r="260" fill="#ff5c6a" opacity="0.08"/>
+  <circle cx="930" cy="1180" r="330" fill="#2f7ff0" opacity="0.10"/>
 
-  <rect x="54" y="52" width="972" height="1424" rx="44" fill="#ffffff" opacity="0.92" filter="url(#cardShadow)"/>
-  <rect x="54" y="52" width="972" height="1424" rx="44" fill="none" stroke="#d4dde8" stroke-width="2"/>
+  <rect x="64" y="64" width="952" height="1400" rx="48" fill="#ffffff" opacity="0.94" filter="url(#cardShadow)"/>
+  <rect x="64" y="64" width="952" height="1400" rx="48" fill="none" stroke="#d4dde8" stroke-width="2"/>
 
-  <g transform="translate(104 104)">
-    <rect x="0" y="0" width="872" height="116" rx="32" fill="url(#heroBlue)"/>
-    <image href="../app-mark.png" x="34" y="28" width="60" height="60" preserveAspectRatio="xMidYMid meet"/>
+  <g transform="translate(112 112)">
+    <rect x="0" y="0" width="856" height="112" rx="32" fill="url(#brandBlue)"/>
+    <image href="../app-mark.png" x="34" y="26" width="60" height="60" preserveAspectRatio="xMidYMid meet"/>
     <text x="116" y="58" class="latin" font-size="42" font-weight="800" fill="#ffffff" letter-spacing="-1.4">Dea<tspan fill="#ff5c6a">l</tspan>r</text>
-    <text x="118" y="88" class="latin" font-size="18" font-weight="700" fill="#dbeafe">Deal with the Right App!</text>
-    <text x="840" y="70" class="ml" font-size="26" font-weight="800" text-anchor="end" fill="#ffffff">&#xD24;&#xD3F;&#xD30;&#xD41;&#xD35;&#xD28;&#xD28;&#xD4D;&#xD24;&#xD2A;&#xD41;&#xD30;&#xD02; &#xD32;&#xD4B;&#xD15;&#xD4D;&#xD15;&#xD7D;</text>
+    <text x="118" y="86" class="latin" font-size="18" font-weight="700" fill="#dbeafe">Deal with the Right App!</text>
+    <text x="818" y="70" class="ml" font-size="28" font-weight="900" text-anchor="end" fill="#ffffff">&#xD24;&#xD3F;&#xD30;&#xD41;&#xD35;&#xD28;&#xD28;&#xD4D;&#xD24;&#xD2A;&#xD41;&#xD30;&#xD02;</text>
   </g>
 
-  <g transform="translate(104 280)">
-    <rect x="0" y="0" width="872" height="462" rx="38" fill="url(#softSky)"/>
-    <circle cx="714" cy="112" r="116" fill="#ffffff" opacity="0.58"/>
-    <circle cx="750" cy="122" r="70" fill="#ff5c6a" opacity="0.12"/>
-    <text x="42" y="82" class="ml smallCaps" fill="#1e4fd6">Dealr-&#xD7D;</text>
-    <text x="42" y="164" class="ml" font-size="70" font-weight="900" fill="#0f172a">&#xD28;&#xD3F;&#xD19;&#xD4D;&#xD19;&#xD33;&#xD41;&#xD1F;&#xD46; &#xD2A;&#xD30;&#xD38;&#xD4D;&#xD2F;&#xD02;</text>
-    <text x="42" y="246" class="ml" font-size="70" font-weight="900" fill="#0f172a">&#xD38;&#xD57;&#xD1C;&#xD28;&#xD4D;&#xD2F;&#xD2E;&#xD3E;&#xD2F;&#xD3F;</text>
-    <text x="42" y="328" class="ml" font-size="70" font-weight="900" fill="#0f172a">&#xD2A;&#xD4B;&#xD38;&#xD4D;&#xD31;&#xD4D;&#xD31;&#xD4D; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD42;</text>
-    <rect x="42" y="362" width="386" height="58" rx="29" fill="#ff5c6a"/>
-    <text x="235" y="400" class="ml" font-size="28" font-weight="900" text-anchor="middle" fill="#ffffff">&#xD2A;&#xD4B;&#xD38;&#xD4D;&#xD31;&#xD4D;&#xD31;&#xD3F;&#xD02;&#xD17;&#xD4D; &#xD2B;&#xD40;&#xD38;&#xD4D; &#xD07;&#xD32;&#xD4D;&#xD32;</text>
+  <g transform="translate(112 288)">
+    <rect x="0" y="0" width="856" height="690" rx="44" fill="#f7fbff"/>
+    <text x="428" y="116" class="ml" font-size="54" font-weight="900" text-anchor="middle" fill="#0f172a">&#xD28;&#xD3F;&#xD19;&#xD4D;&#xD19;&#xD33;&#xD41;&#xD1F;&#xD46; &#xD2A;&#xD30;&#xD38;&#xD4D;&#xD2F;&#xD02;</text>
+    <text x="428" y="344" class="latin" font-size="196" font-weight="900" text-anchor="middle" fill="#ff5c6a" letter-spacing="-8" filter="url(#freeShadow)">FREE</text>
+    <text x="428" y="432" class="ml" font-size="56" font-weight="900" text-anchor="middle" fill="#0f172a">&#xD06;&#xD2F;&#xD3F; &#xD2A;&#xD4B;&#xD38;&#xD4D;&#xD31;&#xD4D;&#xD31;&#xD4D; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD42;</text>
 
-    <g transform="translate(602 222)" filter="url(#softShadow)">
-      <rect x="0" y="0" width="206" height="154" rx="28" fill="#ffffff"/>
-      <rect x="22" y="24" width="162" height="16" rx="8" fill="#dbeafe"/>
-      <rect x="22" y="54" width="128" height="14" rx="7" fill="#e2e8f0"/>
-      <rect x="22" y="86" width="72" height="34" rx="17" fill="#1e4fd6"/>
-      <circle cx="164" cy="103" r="20" fill="#ff5c6a"/>
-    </g>
+    <rect x="208" y="486" width="440" height="72" rx="36" fill="#1e4fd6"/>
+    <text x="428" y="533" class="ml" font-size="30" font-weight="900" text-anchor="middle" fill="#ffffff">&#xD2A;&#xD4B;&#xD38;&#xD4D;&#xD31;&#xD4D;&#xD31;&#xD3F;&#xD02;&#xD17;&#xD4D; &#xD2B;&#xD40;&#xD38;&#xD4D; &#xD07;&#xD32;&#xD4D;&#xD32;</text>
+
+    <text x="428" y="620" class="ml" font-size="30" font-weight="800" text-anchor="middle" fill="#475569">&#xD28;&#xD3E;&#xD1F;&#xD4D;&#xD1F;&#xD3F;&#xD32;&#xD46; &#xD06;&#xD33;&#xD41;&#xD15;&#xD33;&#xD41;&#xD2E;&#xD3E;&#xD2F;&#xD3F; &#xD21;&#xD40;&#xD7D; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD42;</text>
   </g>
 
-  <g transform="translate(104 792)">
-    <g filter="url(#softShadow)">
-      <rect x="0" y="0" width="268" height="178" rx="30" fill="#ffffff"/>
-      <circle cx="50" cy="52" r="26" fill="#e8f1ff"/>
-      <text x="50" y="62" class="latin" font-size="34" font-weight="900" text-anchor="middle" fill="#1e4fd6">&#x20B9;0</text>
-      <text x="28" y="112" class="ml" font-size="28" font-weight="900" fill="#0f172a">100% &#xD2B;&#xD4D;&#xD30;&#xD40;</text>
-      <text x="28" y="148" class="ml" font-size="20" font-weight="700" fill="#64748b">&#xD2A;&#xD30;&#xD38;&#xD4D;&#xD2F;&#xD02; &#xD2A;&#xD4B;&#xD38;&#xD4D;&#xD31;&#xD4D;&#xD31;&#xD4D; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD3E;&#xD02;</text>
-    </g>
-    <g transform="translate(302 0)" filter="url(#softShadow)">
-      <rect x="0" y="0" width="268" height="178" rx="30" fill="#ffffff"/>
-      <circle cx="50" cy="52" r="26" fill="#ecfdf5"/>
-      <path d="M50 26c-14 0-25 11-25 25 0 20 25 45 25 45s25-25 25-45c0-14-11-25-25-25zm0 35a11 11 0 1 1 0-22 11 11 0 0 1 0 22z" fill="#059669"/>
-      <text x="28" y="112" class="ml" font-size="28" font-weight="900" fill="#0f172a">&#xD28;&#xD3E;&#xD1F;&#xD4D;&#xD1F;&#xD3F;&#xD7D; &#xD24;&#xD28;&#xD4D;&#xD28;&#xD46;</text>
-      <text x="28" y="148" class="ml" font-size="20" font-weight="700" fill="#64748b">&#xD35;&#xD3E;&#xD19;&#xD4D;&#xD19;&#xD41;&#xD28;&#xD4D;&#xD28;&#xD35;&#xD30;&#xD46; &#xD15;&#xD23;&#xD4D;&#xD1F;&#xD46;&#xD24;&#xD4D;&#xD24;&#xD3E;&#xD02;</text>
-    </g>
-    <g transform="translate(604 0)" filter="url(#softShadow)">
-      <rect x="0" y="0" width="268" height="178" rx="30" fill="#ffffff"/>
-      <circle cx="50" cy="52" r="26" fill="#fff1f2"/>
-      <path d="M50 24l24 10v18c0 20-11 36-24 42-13-6-24-22-24-42V34l24-10z" fill="#ff5c6a"/>
-      <path d="M39 55l8 8 17-20" fill="none" stroke="#ffffff" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-      <text x="28" y="112" class="ml" font-size="28" font-weight="900" fill="#0f172a">&#xD38;&#xD41;&#xD30;&#xD15;&#xD4D;&#xD37;&#xD3F;&#xD24; &#xD1A;&#xD3E;&#xD31;&#xD4D;&#xD31;&#xD4D;</text>
-      <text x="28" y="148" class="ml" font-size="20" font-weight="700" fill="#64748b">&#xD1F;&#xD4D;&#xD30;&#xD38;&#xD4D;&#xD31;&#xD4D;&#xD31;&#xD4D; &#xD38;&#xD3F;&#xD17;&#xD4D;&#xD28;&#xD7D;&#xD38;&#xD4B;&#xD1F;&#xD46;</text>
+  <g transform="translate(112 1058)">
+    <rect x="0" y="0" width="856" height="220" rx="42" fill="#16325c"/>
+    <text x="52" y="72" class="latin" font-size="54" font-weight="900" fill="#ffffff">dealrapp.in</text>
+    <text x="54" y="122" class="ml" font-size="28" font-weight="800" fill="#dbeafe">&#xD07;&#xD28;&#xD4D;&#xD28;&#xD4D; &#xD24;&#xD41;&#xD1F;&#xD19;&#xD4D;&#xD19;&#xD42;</text>
+    <text x="54" y="168" class="latin" font-size="24" font-weight="800" fill="#93c5fd">dealrapp.in/app</text>
+    <g transform="translate(650 28)">
+      <rect x="0" y="0" width="164" height="164" rx="22" fill="#ffffff"/>
+      <image href="../banners/apk-download-qr.png" x="14" y="14" width="136" height="136" preserveAspectRatio="xMidYMid meet"/>
     </g>
   </g>
 
-  <g transform="translate(104 1032)">
-    <rect x="0" y="0" width="872" height="198" rx="34" fill="#16325c"/>
-    <text x="42" y="62" class="ml" font-size="34" font-weight="900" fill="#ffffff">&#xD35;&#xD3F;&#xD7D;&#xD15;&#xD4D;&#xD15;&#xD3E;&#xD28;&#xD41;&#xD33;&#xD4D;&#xD33;&#xD24;&#xD4D; &#xD09;&#xD23;&#xD4D;&#xD1F;&#xD4B;?</text>
-    <text x="42" y="112" class="ml" font-size="26" font-weight="700" fill="#dbeafe">&#xD2E;&#xD4A;&#xD2C;&#xD48;&#xD7D;, &#xD35;&#xD3E;&#xD39;&#xD28;&#xD02;, &#xD35;&#xD40;&#xD1F;&#xD4D;, &#xD1C;&#xD4B;&#xD32;&#xD3F;, &#xD38;&#xD47;&#xD35;&#xD28;&#xD19;&#xD4D;&#xD19;&#xD7E; &#x2014;</text>
-    <text x="42" y="150" class="ml" font-size="26" font-weight="700" fill="#dbeafe">&#xD0E;&#xD28;&#xD4D;&#xD24;&#xD41;&#xD02; Dealr-&#xD7D; &#xD38;&#xD57;&#xD1C;&#xD28;&#xD4D;&#xD2F;&#xD2E;&#xD3E;&#xD2F;&#xD3F; &#xD32;&#xD3F;&#xD38;&#xD4D;&#xD31;&#xD4D;&#xD31;&#xD4D; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD42;.</text>
-    <g transform="translate(666 22)">
-      <rect x="0" y="0" width="154" height="154" rx="20" fill="#ffffff"/>
-      <image href="../banners/apk-download-qr.png" x="13" y="13" width="128" height="128" preserveAspectRatio="xMidYMid meet"/>
+  <g transform="translate(112 1292)">
+    <path d="M0 62c78-26 148-26 214 0s134 26 204 0 142-26 214 0 146 26 224 0v92H0z" fill="#cfe2ff"/>
+    <g transform="translate(78 0)" fill="#16325c" opacity="0.95">
+      <rect x="18" y="74" width="160" height="70" rx="4"/>
+      <rect x="58" y="34" width="80" height="40" rx="3"/>
+      <path d="M38 74l60-54 60 54z"/>
+      <path d="M74 34l24-26 24 26z"/>
+      <rect x="82" y="98" width="30" height="46" rx="15" fill="#dbeafe"/>
     </g>
-  </g>
-
-  <g transform="translate(92 1208)" opacity="0.96">
-    <path d="M0 92h916v168H0z" fill="#cfe2ff"/>
-    <path d="M0 114c90-26 164-26 234 0s142 26 218 0 148-26 224 0 150 26 240 0v146H0z" fill="#b8d5ff"/>
-
-    <g transform="translate(110 22)" fill="#16325c">
-      <rect x="12" y="78" width="168" height="72" rx="4"/>
-      <rect x="54" y="34" width="84" height="44" rx="3"/>
-      <path d="M34 78l62-56 62 56z"/>
-      <path d="M70 34l26-28 26 28z"/>
-      <rect x="80" y="102" width="32" height="48" rx="16" fill="#dbeafe"/>
-      <rect x="28" y="96" width="24" height="22" rx="3" fill="#dbeafe"/>
-      <rect x="140" y="96" width="24" height="22" rx="3" fill="#dbeafe"/>
-    </g>
-
-    <g transform="translate(420 52)" fill="#16325c">
-      <rect x="0" y="56" width="182" height="58" rx="10"/>
-      <rect x="22" y="32" width="120" height="28" rx="8"/>
-      <rect x="144" y="66" width="26" height="18" rx="4" fill="#dbeafe"/>
-      <rect x="20" y="68" width="42" height="24" rx="4" fill="#dbeafe"/>
-      <rect x="72" y="68" width="42" height="24" rx="4" fill="#dbeafe"/>
-      <circle cx="42" cy="118" r="16"/>
-      <circle cx="140" cy="118" r="16"/>
-      <text x="82" y="53" class="latin" font-size="18" font-weight="900" text-anchor="middle" fill="#dbeafe">CITY</text>
-    </g>
-
-    <g transform="translate(708 20)" fill="#16325c">
-      <rect x="70" y="76" width="14" height="102" rx="7"/>
+    <g transform="translate(640 -6)" fill="#16325c" opacity="0.95">
+      <rect x="70" y="78" width="14" height="108" rx="7"/>
       <path d="M80 84c24-36 58-52 102-48-36 20-61 42-75 68z"/>
       <path d="M72 88C42 52 12 42-28 48 8 64 36 84 54 112z"/>
       <path d="M80 74C72 36 88 10 128 0c-16 24-22 49-18 76z"/>
-      <rect x="196" y="92" width="12" height="86" rx="6"/>
-      <path d="M204 96c22-30 50-44 84-40-30 16-50 36-62 58z"/>
-      <path d="M198 98c-28-26-54-34-86-26 30 12 52 28 66 50z"/>
     </g>
-  </g>
-
-  <g transform="translate(104 1260)">
-    <rect x="0" y="0" width="872" height="78" rx="39" fill="#1e4fd6"/>
-    <text x="436" y="50" class="ml" font-size="30" font-weight="900" text-anchor="middle" fill="#ffffff">&#xD07;&#xD2A;&#xD4D;&#xD2A;&#xD4B;&#xD7E; &#xD24;&#xD28;&#xD4D;&#xD28;&#xD46; &#xD38;&#xD4D;&#xD15;&#xD3E;&#xD7B; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD42; &#x2022; dealrapp.in/app</text>
-  </g>
-
-  <g transform="translate(104 1362)">
-    <rect x="0" y="0" width="872" height="78" rx="28" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="436" y="50" class="ml" font-size="23" font-weight="800" text-anchor="middle" fill="#334155">&#xD24;&#xD3F;&#xD30;&#xD41;&#xD35;&#xD28;&#xD28;&#xD4D;&#xD24;&#xD2A;&#xD41;&#xD30;&#xD02; &#x2022; &#xD2A;&#xD3E;&#xD33;&#xD2F;&#xD02; &#x2022; &#xD2A;&#xD1F;&#xD4D;&#xD1F;&#xD02; &#x2022; &#xD15;&#xD34;&#xD15;&#xD4D;&#xD15;&#xD42;&#xD1F;&#xD4D;&#xD1F;&#xD02; &#x2022; &#xD28;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD3E;&#xD31;&#xD4D;&#xD31;&#xD3F;&#xD7B;&#xD15;&#xD30; &#x2022; &#xD1F;&#xD46;&#xD15;&#xD4D;&#xD28;&#xD4B;&#xD2A;&#xD3E;&#xD7C;&#xD15;&#xD4D;&#xD15;&#xD4D;</text>
+    <text x="428" y="166" class="ml" font-size="24" font-weight="900" text-anchor="middle" fill="#334155">&#xD38;&#xD4D;&#xD15;&#xD3E;&#xD7B; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD24;&#xD4D; &#xD06;&#xD2A;&#xD4D;&#xD2A;&#xD4D; &#xD07;&#xD7B;&#xD38;&#xD4D;&#xD31;&#xD4D;&#xD31;&#xD3E;&#xD7E; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD42;</text>
   </g>
 </svg>
