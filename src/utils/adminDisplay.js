@@ -64,7 +64,23 @@ const PAGE_LABELS = {
   contact: 'Contact',
   admin: 'Admin',
   'seller-profile': 'Seller profile',
+  download_app: 'Download app',
 };
+
+function downloadSourceLabel(detail) {
+  switch (detail) {
+    case 'home_banner':
+      return 'home banner';
+    case 'topbar':
+      return 'top bar';
+    case 'sidebar':
+      return 'sidebar';
+    case 'android-app':
+      return 'feature banner';
+    default:
+      return detail || '';
+  }
+}
 
 export function pageLabel(page) {
   return PAGE_LABELS[page] || page || 'the site';
@@ -94,6 +110,14 @@ export function activityMessage(log) {
       return `${who} messaged about ${log.adTitle || 'a listing'}`;
     case 'report':
       return `${who} reported ${log.adTitle || 'a listing'}`;
+    case 'download_page_view':
+      return `${who} visited the download page`;
+    case 'download_page_cta_click': {
+      const source = downloadSourceLabel(log.detail);
+      return `${who} opened the download page${source ? ` from ${source}` : ''}`;
+    }
+    case 'download_app_click':
+      return `${who} clicked Download for Android`;
     default:
       return `${who} · ${log.type || 'activity'}`;
   }

@@ -190,6 +190,20 @@ export function trackSearch(query) {
   trackEvent('search', { page: 'home', detail });
 }
 
+export function trackDownloadPageCta(source = 'unknown') {
+  trackEvent('download_page_cta_click', {
+    page: 'download_app',
+    detail: String(source || 'unknown'),
+  });
+}
+
+export function trackDownloadAppClick(source = 'download_page') {
+  trackEvent('download_app_click', {
+    page: 'download_app',
+    detail: String(source || 'download_page'),
+  });
+}
+
 export function trackChat(listing = {}) {
   trackEvent('chat', {
     page: 'chat',

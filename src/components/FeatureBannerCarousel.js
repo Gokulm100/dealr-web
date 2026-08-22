@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { APP_DOWNLOAD_PATH } from '../content/siteInfo';
+import { trackDownloadPageCta } from '../utils/siteAnalytics';
 
 const SLIDES = [
   {
@@ -123,7 +124,10 @@ export default function FeatureBannerCarousel() {
   };
 
   const handleNavigate = (event, slide) => {
-    if (slide.href) return;
+    if (slide.href) {
+      trackDownloadPageCta(slide.id || 'feature_banner');
+      return;
+    }
     event.preventDefault();
     if ((slide.page === 'post' || slide.page === 'messages') && user?.isBlocked) {
       showToast(

@@ -10,6 +10,7 @@ import {
   Search,
   Flag,
   FileText,
+  Download,
 } from 'lucide-react';
 import { fetchAdminActivityLog } from '../../services/adminApi';
 import {
@@ -33,6 +34,8 @@ const FILTERS = [
   { id: 'visit', label: 'Visits' },
   { id: 'ad_view', label: 'Ad views' },
   { id: 'search', label: 'Searches' },
+  { id: 'download_page_view', label: 'Download visits' },
+  { id: 'download_app_click', label: 'Download clicks' },
   { id: 'post_ad', label: 'Posts' },
   { id: 'chat', label: 'Chats' },
   { id: 'login', label: 'Sign-ins' },
@@ -49,6 +52,7 @@ function TypeIcon({ type }) {
   if (type === 'search') return <Search {...props} />;
   if (type === 'chat') return <MessageCircle {...props} />;
   if (type === 'report') return <Flag {...props} />;
+  if (type === 'download_page_view' || type === 'download_page_cta_click' || type === 'download_app_click') return <Download {...props} />;
   return <FileText {...props} />;
 }
 

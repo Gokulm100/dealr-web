@@ -239,5 +239,116 @@
         <a href="/delete-account">Delete account</a>
       </p>
     </div>
+    <script>
+      (function () {
+        var API_BASE = 'https://e4u-backend.onrender.com';
+        var VISITOR_KEY = 'dealr_visitor_id';
+        var SESSION_KEY = 'dealr_session_id';
+        var SESSION_AT_KEY = 'dealr_session_at';
+        var SESSION_GAP_MS = 30 * 60 * 1000;
+
+        function uuid() {
+          if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+            return window.crypto.randomUUID();
+          }
+          return 'v_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+        }
+
+        function getStoredJson(key) {
+          try {
+            var raw = window.localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : null;
+          } catch (err) {
+            return null;
+          }
+        }
+
+        function getVisitorId() {
+          var id = '';
+          try {
+            id = window.localStorage.getItem(VISITOR_KEY) || '';
+            if (!id) {
+              id = uuid();
+              window.localStorage.setItem(VISITOR_KEY, id);
+            }
+          } catch (err) {
+            id = id || uuid();
+          }
+          return id;
+        }
+
+        function getSessionId() {
+          var now = Date.now();
+          var sessionId = '';
+          var lastAt = 0;
+          try {
+            sessionId = window.sessionStorage.getItem(SESSION_KEY) || '';
+            lastAt = Number(window.sessionStorage.getItem(SESSION_AT_KEY) || 0);
+            if (!sessionId || !lastAt || now - lastAt > SESSION_GAP_MS) {
+              sessionId = uuid();
+            }
+            window.sessionStorage.setItem(SESSION_KEY, sessionId);
+            window.sessionStorage.setItem(SESSION_AT_KEY, String(now));
+          } catch (err) {
+            sessionId = sessionId || uuid();
+          }
+          return sessionId;
+        }
+
+        function actorFields() {
+          var user = getStoredJson('user') || {};
+          return {
+            visitorId: getVisitorId(),
+            sessionId: getSessionId(),
+            userId: user._id || user.id || null,
+            userName: user.name || null,
+            userEmail: user.email || null
+          };
+        }
+
+        function sendEvent(type, detail) {
+          var event = Object.assign({
+            type: type,
+            page: 'download_app',
+            adId: null,
+            adTitle: null,
+            detail: detail || null,
+            path: window.location.pathname + window.location.search,
+            createdAt: new Date().toISOString()
+          }, actorFields());
+          var body = JSON.stringify({ events: [event] });
+          var url = API_BASE + '/api/analytics/track';
+          var token = '';
+          try {
+            token = window.localStorage.getItem('authToken') || '';
+          } catch (err) {
+            token = '';
+          }
+
+          if (navigator.sendBeacon && (!token || token === 'null')) {
+            var blob = new Blob([body], { type: 'application/json' });
+            if (navigator.sendBeacon(url, blob)) return;
+          }
+
+          var headers = { 'Content-Type': 'application/json' };
+          if (token && token !== 'null') headers.Authorization = 'Bearer ' + token;
+          window.fetch(url, {
+            method: 'POST',
+            headers: headers,
+            body: body,
+            keepalive: true
+          }).catch(function () {});
+        }
+
+        sendEvent('download_page_view', 'download_page');
+
+        var download = document.getElementById('download-apk');
+        if (download) {
+          download.addEventListener('click', function () {
+            sendEvent('download_app_click', 'download-apk');
+          });
+        }
+      }());
+    </script>
   </body>
 </html>

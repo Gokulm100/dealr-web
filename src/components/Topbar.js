@@ -2,6 +2,7 @@ import React from 'react';
 import { PlusCircle, Smartphone } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { APP_DOWNLOAD_PATH } from '../content/siteInfo';
+import { trackDownloadPageCta } from '../utils/siteAnalytics';
 import DealrLogo from './DealrLogo';
 import SearchBar from './SearchBar';
 
@@ -21,7 +22,11 @@ export default function Topbar() {
       <SearchBar />
 
       <div className="topbar-right">
-        <a className="topbar-btn topbar-btn-app" href={APP_DOWNLOAD_PATH}>
+        <a
+          className="topbar-btn topbar-btn-app"
+          href={APP_DOWNLOAD_PATH}
+          onClick={() => trackDownloadPageCta('topbar')}
+        >
           <Smartphone size={16} />
           <span className="topbar-btn-label">Get the app</span>
         </a>

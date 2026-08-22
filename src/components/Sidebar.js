@@ -2,6 +2,7 @@ import React from 'react';
 import { Home, MessageCircle, PlusCircle, Volume2, User, Lock, Shield, Info, Mail, Smartphone } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { APP_DOWNLOAD_PATH } from '../content/siteInfo';
+import { trackDownloadPageCta } from '../utils/siteAnalytics';
 
 const navItems = [
   { id: 'home', label: 'Home', Icon: Home },
@@ -46,7 +47,7 @@ export default function Sidebar() {
         )}
       </div>
       <div className="sidebar-footer">
-        <a className="nav-item" href={APP_DOWNLOAD_PATH}>
+        <a className="nav-item" href={APP_DOWNLOAD_PATH} onClick={() => trackDownloadPageCta('sidebar')}>
           <Smartphone size={18} /> Get the app
         </a>
         <button

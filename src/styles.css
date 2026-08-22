@@ -5873,6 +5873,9 @@ button, input, textarea, select {
 .admin-log-type.is-search { background: #f5f3ff; color: #6d28d9; }
 .admin-log-type.is-chat { background: #f0fdf4; color: #047857; }
 .admin-log-type.is-report { background: #fef2f2; color: #b91c1c; }
+.admin-log-type.is-download_page_view,
+.admin-log-type.is-download_page_cta_click,
+.admin-log-type.is-download_app_click { background: #ecfdf5; color: #047857; }
 .admin-log-copy { flex: 1; min-width: 0; }
 .admin-log-message {
   font-size: 14px;

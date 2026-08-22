@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Smartphone, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { APP_DOWNLOAD_PATH } from '../content/siteInfo';
+import { trackDownloadPageCta } from '../utils/siteAnalytics';
 
 const DISMISS_KEY = 'dealr_app_banner_dismissed';
 
@@ -74,7 +75,11 @@ export default function AppDownloadBanner() {
           {' '}
           — faster posting &amp; chat. Play Store coming soon.
         </p>
-        <a className="app-download-banner-cta" href={APP_DOWNLOAD_PATH}>
+        <a
+          className="app-download-banner-cta"
+          href={APP_DOWNLOAD_PATH}
+          onClick={() => trackDownloadPageCta('home_banner')}
+        >
           Download
         </a>
         <button
