@@ -10,10 +10,24 @@
     { "source": "/app/", "destination": "/app.html" },
     { "source": "/manifest.json", "destination": "/manifest.json" },
     { "source": "/service-worker.js", "destination": "/service-worker.js" },
+    { "source": "/firebase-messaging-sw.js", "destination": "/firebase-messaging-sw.js" },
     { "source": "/favicon.ico", "destination": "/favicon.ico" },
     { "source": "/((?!api/).*)", "destination": "/" }
   ],
   "headers": [
+    {
+      "source": "/firebase-messaging-sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        }
+      ]
+    },
     {
       "source": "/downloads/(.*)\\.apk",
       "headers": [

@@ -5,6 +5,7 @@ import Sidebar from './components/Sidebar';
 import MobileNav from './components/MobileNav';
 import BetaBanner from './components/BetaBanner';
 import AppDownloadBanner from './components/AppDownloadBanner';
+import PushPrompt from './components/PushPrompt';
 import { ToastContainer, ModalDialog } from './components/UI';
 import HomePage from './pages/HomePage';
 import AdDetailPage from './pages/AdDetailPage';
@@ -49,6 +50,7 @@ function AppShell() {
       <div className="app-body">
         <Sidebar />
         <main className="main">
+          <PushPrompt />
           <PageRouter />
         </main>
       </div>

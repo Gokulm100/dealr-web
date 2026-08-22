@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  Bell,
   CheckCircle,
   ChevronRight,
   LayoutGrid,
@@ -13,6 +14,11 @@ import {
 import { useApp } from '../context/AppContext';
 import ReviewModal from '../components/ReviewModal';
 import { trackLogin, trackLogout, flushAnalytics } from '../utils/siteAnalytics';
+import {
+  enableWebPush,
+  getNotificationPermission,
+  isWebPushSupported,
+} from '../utils/pushNotifications';
 
 const API = 'https://e4u-backend.onrender.com';
 const GOOGLE_CLIENT_ID = '281405583072-n7rkibd2qc0afs76dve0kgbsi9p15jfk.apps.googleusercontent.com';
@@ -81,6 +87,56 @@ function LoginWall({ onGoogleSignIn }) {
             <div className="feature-text">{text}</div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+
+function NotificationsAction({ apiFetch, showToast }) {
+  const [supported, setSupported] = useState(false);
+  const [permission, setPermission] = useState(getNotificationPermission());
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    isWebPushSupported().then(setSupported);
+  }, []);
+
+  if (!supported && permission !== 'granted') return null;
+
+  const enabled = permission === 'granted';
+  const blocked = permission === 'denied';
+  const label = enabled ? 'On' : blocked ? 'Blocked in browser' : busy ? 'Enabling…' : 'Enable';
+
+  const onClick = async () => {
+    if (enabled || blocked || busy) return;
+    setBusy(true);
+    try {
+      await enableWebPush(apiFetch);
+      setPermission('granted');
+      showToast('Notifications enabled.', 'success');
+    } catch (err) {
+      setPermission(getNotificationPermission());
+      showToast(err.message || 'Could not enable notifications.', 'error');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="actions-card" style={{ marginBottom: 20 }}>
+      <div
+        className="action-row"
+        onClick={onClick}
+        style={{ cursor: enabled || blocked ? 'default' : 'pointer' }}
+      >
+        <div className="action-icon" style={{ background: '#eff6ff' }}>
+          <Bell size={18} color="var(--primary)" strokeWidth={2} />
+        </div>
+        <div className="action-text">Notifications</div>
+        <div style={{ fontSize: 12, fontWeight: 700, color: enabled ? 'var(--success)' : 'var(--muted)' }}>
+          {label}
+        </div>
       </div>
     </div>
   );
@@ -173,6 +229,8 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      <NotificationsAction apiFetch={apiFetch} showToast={showToast} />
 
       {pendingReviews.length > 0 && (
         <>
