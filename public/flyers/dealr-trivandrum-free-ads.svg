@@ -109,16 +109,6 @@
     </g>
   </g>
 
-  <g transform="translate(104 1260)">
-    <rect x="0" y="0" width="872" height="78" rx="39" fill="#1e4fd6"/>
-    <text x="436" y="50" class="ml" font-size="30" font-weight="900" text-anchor="middle" fill="#ffffff">&#xD07;&#xD2A;&#xD4D;&#xD2A;&#xD4B;&#xD7E; &#xD24;&#xD28;&#xD4D;&#xD28;&#xD46; &#xD38;&#xD4D;&#xD15;&#xD3E;&#xD7B; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD42; &#x2022; dealrapp.in/app</text>
-  </g>
-
-  <g transform="translate(104 1362)">
-    <rect x="0" y="0" width="872" height="78" rx="28" fill="#f8fafc" stroke="#e2e8f0"/>
-    <text x="436" y="50" class="ml" font-size="23" font-weight="800" text-anchor="middle" fill="#334155">&#xD24;&#xD3F;&#xD30;&#xD41;&#xD35;&#xD28;&#xD28;&#xD4D;&#xD24;&#xD2A;&#xD41;&#xD30;&#xD02; &#x2022; &#xD2A;&#xD3E;&#xD33;&#xD2F;&#xD02; &#x2022; &#xD2A;&#xD1F;&#xD4D;&#xD1F;&#xD02; &#x2022; &#xD15;&#xD34;&#xD15;&#xD4D;&#xD15;&#xD42;&#xD1F;&#xD4D;&#xD1F;&#xD02; &#x2022; &#xD28;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD3E;&#xD31;&#xD4D;&#xD31;&#xD3F;&#xD7B;&#xD15;&#xD30; &#x2022; &#xD1F;&#xD46;&#xD15;&#xD4D;&#xD28;&#xD4B;&#xD2A;&#xD3E;&#xD7C;&#xD15;&#xD4D;&#xD15;&#xD4D;</text>
-  </g>
-
   <g transform="translate(92 1208)" opacity="0.96">
     <path d="M0 92h916v168H0z" fill="#cfe2ff"/>
     <path d="M0 114c90-26 164-26 234 0s142 26 218 0 148-26 224 0 150 26 240 0v146H0z" fill="#b8d5ff"/>
@@ -153,5 +143,15 @@
       <path d="M204 96c22-30 50-44 84-40-30 16-50 36-62 58z"/>
       <path d="M198 98c-28-26-54-34-86-26 30 12 52 28 66 50z"/>
     </g>
+  </g>
+
+  <g transform="translate(104 1260)">
+    <rect x="0" y="0" width="872" height="78" rx="39" fill="#1e4fd6"/>
+    <text x="436" y="50" class="ml" font-size="30" font-weight="900" text-anchor="middle" fill="#ffffff">&#xD07;&#xD2A;&#xD4D;&#xD2A;&#xD4B;&#xD7E; &#xD24;&#xD28;&#xD4D;&#xD28;&#xD46; &#xD38;&#xD4D;&#xD15;&#xD3E;&#xD7B; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD42; &#x2022; dealrapp.in/app</text>
+  </g>
+
+  <g transform="translate(104 1362)">
+    <rect x="0" y="0" width="872" height="78" rx="28" fill="#f8fafc" stroke="#e2e8f0"/>
+    <text x="436" y="50" class="ml" font-size="23" font-weight="800" text-anchor="middle" fill="#334155">&#xD24;&#xD3F;&#xD30;&#xD41;&#xD35;&#xD28;&#xD28;&#xD4D;&#xD24;&#xD2A;&#xD41;&#xD30;&#xD02; &#x2022; &#xD2A;&#xD3E;&#xD33;&#xD2F;&#xD02; &#x2022; &#xD2A;&#xD1F;&#xD4D;&#xD1F;&#xD02; &#x2022; &#xD15;&#xD34;&#xD15;&#xD4D;&#xD15;&#xD42;&#xD1F;&#xD4D;&#xD1F;&#xD02; &#x2022; &#xD28;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD3E;&#xD31;&#xD4D;&#xD31;&#xD3F;&#xD7B;&#xD15;&#xD30; &#x2022; &#xD1F;&#xD46;&#xD15;&#xD4D;&#xD28;&#xD4B;&#xD2A;&#xD3E;&#xD7C;&#xD15;&#xD4D;&#xD15;&#xD4D;</text>
   </g>
 </svg>
