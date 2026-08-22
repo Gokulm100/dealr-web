@@ -87,7 +87,6 @@ export function pageLabel(page) {
 }
 
 export function activityMessage(log) {
-  if (log.message) return log.message;
   const who = actorDisplayName(log);
   switch (log.type) {
     case 'visit':
@@ -119,6 +118,6 @@ export function activityMessage(log) {
     case 'download_app_click':
       return `${who} clicked Download for Android`;
     default:
-      return `${who} · ${log.type || 'activity'}`;
+      return log.message || `${who} · ${log.type || 'activity'}`;
   }
 }
