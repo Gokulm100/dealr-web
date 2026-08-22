@@ -306,8 +306,8 @@
           };
         }
 
-        function sendEvent(type, detail) {
-          var event = Object.assign({
+        function buildEvent(type, detail, actor) {
+          return Object.assign({
             type: type,
             page: 'download_app',
             adId: null,
@@ -315,19 +315,17 @@
             detail: detail || null,
             path: window.location.pathname + window.location.search,
             createdAt: new Date().toISOString()
-          }, actorFields());
-          var body = JSON.stringify({ events: [event] });
+          }, actor);
+        }
+
+        function sendEvents(events) {
+          var body = JSON.stringify({ events: events });
           var url = API_BASE + '/api/analytics/track';
           var token = '';
           try {
             token = window.localStorage.getItem('authToken') || '';
           } catch (err) {
             token = '';
-          }
-
-          if (navigator.sendBeacon && (!token || token === 'null')) {
-            var blob = new Blob([body], { type: 'application/json' });
-            if (navigator.sendBeacon(url, blob)) return;
           }
 
           var headers = { 'Content-Type': 'application/json' };
@@ -340,7 +338,15 @@
           }).catch(function () {});
         }
 
-        sendEvent('download_page_view', 'download_page');
+        function sendEvent(type, detail) {
+          sendEvents([buildEvent(type, detail, actorFields())]);
+        }
+
+        var actor = actorFields();
+        sendEvents([
+          buildEvent('page_view', 'download_page', actor),
+          buildEvent('download_page_view', 'download_page', actor)
+        ]);
 
         var download = document.getElementById('download-apk');
         if (download) {
