@@ -1,0 +1,32 @@
+{
+  "name": "Dealr Full Stack",
+  "user": "ubuntu",
+  "install": "bash .cursor/install.sh",
+  "start": "bash .cursor/start.sh",
+  "repositoryDependencies": [
+    "github.com/Gokulm100/dealr-backend",
+    "github.com/Gokulm100/dealr-mobile"
+  ],
+  "ports": [
+    { "name": "web", "port": 3000 },
+    { "name": "api", "port": 3001 },
+    { "name": "metro", "port": 8081 }
+  ],
+  "terminals": [
+    {
+      "name": "backend",
+      "command": "if [ -d ../dealr-backend ]; then cd ../dealr-backend && export GOOGLE_APPLICATION_CREDENTIALS_JSON=\"$(cat serviceAccountKey.json)\" && npm start; else echo 'dealr-backend repo not found next to dealr-web'; sleep infinity; fi",
+      "description": "Dealr backend API (Express + Socket.IO) on http://localhost:3001, backed by local MongoDB."
+    },
+    {
+      "name": "web",
+      "command": "BROWSER=none HOST=0.0.0.0 PORT=3000 REACT_APP_API_BASE_URL=http://localhost:3001 npm start",
+      "description": "Dealr React web app (CRA dev server) on http://localhost:3000, pointed at the local backend."
+    },
+    {
+      "name": "mobile-metro",
+      "command": "if [ -d ../dealr-mobile ]; then cd ../dealr-mobile && npx expo start; else echo 'dealr-mobile repo not found next to dealr-web'; sleep infinity; fi",
+      "description": "Expo Metro bundler for the Dealr mobile app (port 8081). Open in Expo Go / a dev build."
+    }
+  ]
+}
