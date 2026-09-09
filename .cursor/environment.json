@@ -1,8 +1,8 @@
 {
   "name": "Dealr Full Stack",
   "user": "ubuntu",
-  "install": "bash .cursor/install.sh",
-  "start": "bash .cursor/start.sh",
+  "install": "cd /agent/repos/dealr-web && bash .cursor/install.sh",
+  "start": "cd /agent/repos/dealr-web && bash .cursor/start.sh",
   "repositoryDependencies": [
     "github.com/Gokulm100/dealr-backend",
     "github.com/Gokulm100/dealr-mobile"
