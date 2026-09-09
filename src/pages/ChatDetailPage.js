@@ -112,6 +112,10 @@ export default function ChatDetailPage() {
   }, [chatInfo]);
 
   useEffect(() => {
+    if (!chatInfo?.adId) navigate('messages');
+  }, [chatInfo, navigate]);
+
+  useEffect(() => {
     if (!user?._id) return undefined;
     emitJoin(user._id);
     return subscribeChatMessages((payload) => {
