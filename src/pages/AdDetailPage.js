@@ -22,7 +22,7 @@ import OwnerAdActions from '../components/OwnerAdActions';
 import SeededBadge, { SeededNotice } from '../components/SeededBadge';
 import { getAdIdFromLocation } from '../utils/facebookShare';
 import { shareListing } from '../utils/shareListing';
-import { getVisitorId, trackAdView, trackChat } from '../utils/siteAnalytics';
+import { getVisitorId, trackAdView, trackChat, trackContactSeller, trackShareListing } from '../utils/siteAnalytics';
 
 const FALLBACK = 'https://images.pexels.com/photos/10703759/pexels-photo-10703759.jpeg';
 
@@ -261,6 +261,7 @@ function DetailChatBox({ listing, user, apiFetch, showToast, navigate }) {
         body: JSON.stringify({ adId: listing.id, from: user._id, to: listing.sellerId, message: msg }),
       });
       trackChat({ id: listing.id, title: listing.title });
+      trackContactSeller({ id: listing.id, title: listing.title });
       await fetchMsgs(true);
     } catch {
       setMessages(prev => removeOptimistic(prev, optId));
@@ -539,6 +540,7 @@ export default function AdDetailPage() {
   const handleShare = async () => {
     try {
       const method = await shareListing(listing);
+      trackShareListing(listing);
       if (method === 'clipboard' || method === 'prompt') {
         showToast('Listing link copied. Paste it in any app to share.', 'success');
       }

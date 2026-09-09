@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { X, CircleCheck, ChevronDown, UserRound } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { trackMarkSold } from '../utils/siteAnalytics';
 
 export default function MarkSoldModal({ ad, open, onClose, onSold }) {
   const { apiFetch, showToast } = useApp();
@@ -52,6 +53,7 @@ export default function MarkSoldModal({ ad, open, onClose, onSold }) {
           amount: soldAmount.trim(),
         }),
       });
+      trackMarkSold({ id: ad.id, title: ad.title });
       onSold({
         adId: ad.id,
         adTitle: ad.title,

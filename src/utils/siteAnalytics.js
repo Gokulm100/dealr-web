@@ -212,6 +212,51 @@ export function trackChat(listing = {}) {
   });
 }
 
+// EXP-1 additive funnel events (align web with the extended backend model).
+export function trackContactSeller(listing = {}) {
+  trackEvent('contact_seller', {
+    page: 'detail',
+    adId: listing.id || listing.adId,
+    adTitle: listing.title || listing.adTitle,
+  });
+}
+
+export function trackShareListing(listing = {}) {
+  trackEvent('share_listing', {
+    page: 'detail',
+    adId: listing.id || listing.adId,
+    adTitle: listing.title || listing.adTitle,
+  });
+}
+
+export function trackFavoriteAdded(listing = {}) {
+  trackEvent('favorite_added', {
+    page: 'detail',
+    adId: listing.id || listing.adId,
+    adTitle: listing.title || listing.adTitle,
+  });
+}
+
+export function trackSearchResultClick(listing = {}) {
+  trackEvent('search_result_clicked', {
+    page: 'home',
+    adId: listing.id || listing.adId,
+    adTitle: listing.title || listing.adTitle,
+  });
+}
+
+export function trackMarkSold(listing = {}) {
+  trackEvent('mark_sold', {
+    page: 'detail',
+    adId: listing.id || listing.adId,
+    adTitle: listing.title || listing.adTitle,
+  });
+}
+
+export function trackReviewSubmitted(adId) {
+  trackEvent('review_submitted', { page: 'detail', adId });
+}
+
 export function trackReport(listing = {}) {
   trackEvent('report', {
     page: 'detail',

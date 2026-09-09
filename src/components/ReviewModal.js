@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Star, X } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { trackReviewSubmitted } from '../utils/siteAnalytics';
 
 const TAGS = [
   'Responsive',
@@ -32,6 +33,7 @@ export default function ReviewModal({ adId, adTitle, revieweeName, revieweePic, 
         method: 'POST',
         body: JSON.stringify({ adId, rating, tags: selectedTags, text: text.trim() }),
       });
+      trackReviewSubmitted(adId);
       showToast('Review submitted. Thank you!', 'success');
       onSubmitted?.();
       onClose();
