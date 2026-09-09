@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1528" viewBox="0 0 1080 1528" role="img" aria-labelledby="title desc">
+  <title id="title">Dealr Trivandrum free ads flyer</title>
+  <desc id="desc">Simple Malayalam flyer asking people in Trivandrum to post ads for free using Dealr.</desc>
+  <defs>
+    <linearGradient id="pageBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8fbff"/>
+      <stop offset="0.55" stop-color="#e8f1ff"/>
+      <stop offset="1" stop-color="#dce9fb"/>
+    </linearGradient>
+    <linearGradient id="brandBlue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1e4fd6"/>
+      <stop offset="1" stop-color="#2f7ff0"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="20" flood-color="#1e4fd6" flood-opacity="0.16"/>
+    </filter>
+    <filter id="freeShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="10" flood-color="#ff5c6a" flood-opacity="0.25"/>
+    </filter>
+    <style>
+      .ml {
+        font-family: "Noto Sans Malayalam", "Manjari", "Nirmala UI", "Arial Unicode MS", sans-serif;
+      }
+      .latin {
+        font-family: "Sora", "Plus Jakarta Sans", "Segoe UI", Arial, sans-serif;
+      }
+    </style>
+  </defs>
+
+  <rect width="1080" height="1528" fill="url(#pageBg)"/>
+  <circle cx="120" cy="120" r="230" fill="#ffffff" opacity="0.74"/>
+  <circle cx="992" cy="218" r="260" fill="#ff5c6a" opacity="0.08"/>
+  <circle cx="930" cy="1180" r="330" fill="#2f7ff0" opacity="0.10"/>
+
+  <rect x="64" y="64" width="952" height="1400" rx="48" fill="#ffffff" opacity="0.94" filter="url(#cardShadow)"/>
+  <rect x="64" y="64" width="952" height="1400" rx="48" fill="none" stroke="#d4dde8" stroke-width="2"/>
+
+  <g transform="translate(112 112)">
+    <rect x="0" y="0" width="856" height="112" rx="32" fill="url(#brandBlue)"/>
+    <image href="../app-mark.png" x="34" y="26" width="60" height="60" preserveAspectRatio="xMidYMid meet"/>
+    <text x="116" y="58" class="latin" font-size="42" font-weight="800" fill="#ffffff" letter-spacing="-1.4">Dea<tspan fill="#ff5c6a">l</tspan>r</text>
+    <text x="118" y="86" class="latin" font-size="18" font-weight="700" fill="#dbeafe">Deal with the Right App!</text>
+    <text x="818" y="70" class="ml" font-size="28" font-weight="900" text-anchor="end" fill="#ffffff">&#xD24;&#xD3F;&#xD30;&#xD41;&#xD35;&#xD28;&#xD28;&#xD4D;&#xD24;&#xD2A;&#xD41;&#xD30;&#xD02;</text>
+  </g>
+
+  <g transform="translate(112 288)">
+    <rect x="0" y="0" width="856" height="690" rx="44" fill="#f7fbff"/>
+    <text x="428" y="116" class="ml" font-size="54" font-weight="900" text-anchor="middle" fill="#0f172a">&#xD28;&#xD3F;&#xD19;&#xD4D;&#xD19;&#xD33;&#xD41;&#xD1F;&#xD46; &#xD2A;&#xD30;&#xD38;&#xD4D;&#xD2F;&#xD02;</text>
+    <text x="428" y="344" class="latin" font-size="196" font-weight="900" text-anchor="middle" fill="#ff5c6a" letter-spacing="-8" filter="url(#freeShadow)">FREE</text>
+    <text x="428" y="432" class="ml" font-size="56" font-weight="900" text-anchor="middle" fill="#0f172a">&#xD06;&#xD2F;&#xD3F; &#xD2A;&#xD4B;&#xD38;&#xD4D;&#xD31;&#xD4D;&#xD31;&#xD4D; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD42;</text>
+
+    <rect x="208" y="486" width="440" height="72" rx="36" fill="#1e4fd6"/>
+    <text x="428" y="533" class="ml" font-size="30" font-weight="900" text-anchor="middle" fill="#ffffff">&#xD2A;&#xD4B;&#xD38;&#xD4D;&#xD31;&#xD4D;&#xD31;&#xD3F;&#xD02;&#xD17;&#xD4D; &#xD2B;&#xD40;&#xD38;&#xD4D; &#xD07;&#xD32;&#xD4D;&#xD32;</text>
+
+    <text x="428" y="620" class="ml" font-size="30" font-weight="800" text-anchor="middle" fill="#475569">&#xD28;&#xD3E;&#xD1F;&#xD4D;&#xD1F;&#xD3F;&#xD32;&#xD46; &#xD06;&#xD33;&#xD41;&#xD15;&#xD33;&#xD41;&#xD2E;&#xD3E;&#xD2F;&#xD3F; &#xD21;&#xD40;&#xD7D; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD42;</text>
+  </g>
+
+  <g transform="translate(112 1058)">
+    <rect x="0" y="0" width="856" height="220" rx="42" fill="#16325c"/>
+    <text x="52" y="72" class="latin" font-size="54" font-weight="900" fill="#ffffff">dealrapp.in</text>
+    <text x="54" y="122" class="ml" font-size="28" font-weight="800" fill="#dbeafe">&#xD07;&#xD28;&#xD4D;&#xD28;&#xD4D; &#xD24;&#xD41;&#xD1F;&#xD19;&#xD4D;&#xD19;&#xD42;</text>
+    <text x="54" y="168" class="latin" font-size="24" font-weight="800" fill="#93c5fd">dealrapp.in/app</text>
+    <g transform="translate(650 28)">
+      <rect x="0" y="0" width="164" height="164" rx="22" fill="#ffffff"/>
+      <image href="../banners/apk-download-qr.png" x="14" y="14" width="136" height="136" preserveAspectRatio="xMidYMid meet"/>
+    </g>
+  </g>
+
+  <g transform="translate(112 1292)">
+    <path d="M0 62c78-26 148-26 214 0s134 26 204 0 142-26 214 0 146 26 224 0v92H0z" fill="#cfe2ff"/>
+    <g transform="translate(78 0)" fill="#16325c" opacity="0.95">
+      <rect x="18" y="74" width="160" height="70" rx="4"/>
+      <rect x="58" y="34" width="80" height="40" rx="3"/>
+      <path d="M38 74l60-54 60 54z"/>
+      <path d="M74 34l24-26 24 26z"/>
+      <rect x="82" y="98" width="30" height="46" rx="15" fill="#dbeafe"/>
+    </g>
+    <g transform="translate(640 -6)" fill="#16325c" opacity="0.95">
+      <rect x="70" y="78" width="14" height="108" rx="7"/>
+      <path d="M80 84c24-36 58-52 102-48-36 20-61 42-75 68z"/>
+      <path d="M72 88C42 52 12 42-28 48 8 64 36 84 54 112z"/>
+      <path d="M80 74C72 36 88 10 128 0c-16 24-22 49-18 76z"/>
+    </g>
+    <text x="428" y="166" class="ml" font-size="24" font-weight="900" text-anchor="middle" fill="#334155">&#xD38;&#xD4D;&#xD15;&#xD3E;&#xD7B; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD24;&#xD4D; &#xD06;&#xD2A;&#xD4D;&#xD2A;&#xD4D; &#xD07;&#xD7B;&#xD38;&#xD4D;&#xD31;&#xD4D;&#xD31;&#xD3E;&#xD7E; &#xD1A;&#xD46;&#xD2F;&#xD4D;&#xD2F;&#xD42;</text>
+  </g>
+</svg>
